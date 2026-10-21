@@ -14,13 +14,13 @@ nav: contact
 <div class="container prose">
   <div class="contact-card">
     <p class="price-panel-label">Email</p>
-    <p class="contact-email">{{email}}</p>
+    <p class="contact-email"><a href="{{emailHref}}">{{emailWrap}}</a></p>
     <a class="btn btn-primary" href="{{emailHref}}">Email {{name}}</a>
   </div>
 
   <h2>What to include</h2>
   <ul>
-    <li><strong>Free sample:</strong> the Amazon links or ASINs of up to 5 bundle listings. <a href="{{featuredSample}}">Start a free sample email</a>.</li>
+    <li><strong>Free sample ({{bundleName}}):</strong> the Amazon links or ASINs of up to 5 bundle listings, and the Amazon store you sell in. <a href="{{bundleSample}}">Start a free sample email</a> (<a href="{{bundleUrl}}#free-sample-terms">free sample terms</a>).</li>
     <li><strong>An order:</strong> the email address you used at checkout, so we can find your order.</li>
     <li><strong>Anything else:</strong> just tell us what you need.</li>
   </ul>

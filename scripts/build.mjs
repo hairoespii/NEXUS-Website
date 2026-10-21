@@ -39,7 +39,11 @@ function readJson(rel) {
   try {
     return JSON.parse(text);
   } catch (error) {
-    fail(`${rel} is not valid JSON: ${error.message}\n` +
+    // Node gives no line number for the most common slip, a comma after the last item.
+    const trailing = text.search(/,\s*[\]}]/);
+    const hint = !/line \d+/.test(error.message) && trailing >= 0
+      ? `\nLine ${text.slice(0, trailing).split('\n').length} ends with a comma right before a closing ] or }. Delete that comma.` : '';
+    fail(`${rel} is not valid JSON: ${error.message}${hint}\n` +
       'Tip: look for a missing comma, a missing quote, or a comma after the last item near that spot.');
   }
 }
@@ -51,6 +55,8 @@ const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ESCAPES[c]);
 const isText = (value) => typeof value === 'string' && value.trim() !== '';
 const isHttps = (value) => isText(value) && /^https:\/\/[^\s]+$/.test(value);
 const hash = (text) => crypto.createHash('sha256').update(text).digest('hex').slice(0, 10);
+// An email address may wrap before "@" instead of mid-word on narrow screens.
+const emailHtml = (email) => esc(email).replace('@', '<wbr>@');
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
   'August', 'September', 'October', 'November', 'December'];
@@ -99,7 +105,9 @@ function loadSite() {
   site.siteUrl = url.href;
   site.basePath = url.pathname;
   // A github.io address needs no CNAME file; any other address is a custom domain.
-  site.customDomain = url.hostname.endsWith('.github.io') ? '' : url.hostname;
+  // A SITE_URL build is for another host, which never uses GitHub's CNAME file.
+  site.forOtherHost = Boolean(process.env.SITE_URL);
+  site.customDomain = site.forOtherHost || url.hostname.endsWith('.github.io') ? '' : url.hostname;
   return site;
 }
 
@@ -107,8 +115,11 @@ function loadSite() {
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const STATUSES = ['available', 'coming-soon'];
+const PRODUCT_FIELDS = ['slug', 'name', 'status', 'featured', 'badge', 'summary', 'intro', 'seoTitle', 'seoDescription',
+  'highlights', 'chips', 'price', 'freeOffer', 'buyUrl', 'buyLabel', 'buyNote', 'freeSample', 'sections', 'howItWorks',
+  'delivery', 'deliveryNote', 'priceDetails', 'freeSampleTerms', 'faq', 'ctaTitle', 'ctaText', 'disclaimer'];
 
-function loadProducts() {
+function loadProducts(site) {
   const data = readJson('data/products.json');
   const products = data && data.products;
   if (!Array.isArray(products) || products.length === 0) {
@@ -116,6 +127,7 @@ function loadProducts() {
   }
 
   const slugs = new Set();
+  const buyUrls = new Map();
   products.forEach((p, i) => {
     const where = `data/products.json, product #${i + 1}${p && isText(p.name) ? ` ("${p.name}")` : ''}`;
     const need = (ok, message) => { if (!ok) fail(`${where}: ${message}`); };
@@ -126,6 +138,9 @@ function loadProducts() {
     `"${key}" must be a list of items that each have ${fields.map((f) => `"${f}"`).join(' and ')}`);
 
     need(p && typeof p === 'object' && !Array.isArray(p), 'each product must be a { ... } block');
+    for (const key of Object.keys(p)) {
+      need(PRODUCT_FIELDS.includes(key), `unknown field "${key}". Check the spelling. Allowed fields: ${PRODUCT_FIELDS.join(', ')}`);
+    }
     need(isText(p.name), '"name" is required');
     need(isText(p.slug) && SLUG.test(p.slug),
       '"slug" is required and may only use lowercase letters, numbers and dashes, e.g. "my-new-product"');
@@ -139,14 +154,36 @@ function loadProducts() {
     need(isText(p.price.currency) && /^[A-Z]{3}$/.test(p.price.currency), '"price.currency" must be a 3-letter code, e.g. "USD"');
     need(isText(p.price.label), '"price.label" is required, e.g. "$29"');
     need(p.price.terms === undefined || isText(p.price.terms), '"price.terms" must be text, e.g. "one-time, per catalog"');
-    if (p.status === 'available') need(isHttps(p.buyUrl), '"buyUrl" must be the full https:// Stripe payment link');
-    else need(p.buyUrl === undefined || isHttps(p.buyUrl), '"buyUrl" must be a full https:// link');
-    need(p.freeSample === undefined || (isText(p.freeSample.label) && isText(p.freeSample.subject)),
-      '"freeSample" needs a "label" and a "subject" (and usually a "body")');
+    if (p.status === 'available') {
+      need(isHttps(p.buyUrl), '"buyUrl" must be the full https:// Stripe payment link (it starts with https://buy.stripe.com/). ' +
+        'No payment link yet? Set "status": "coming-soon" instead.');
+    } else need(p.buyUrl === undefined || isHttps(p.buyUrl), '"buyUrl" must be a full https:// link');
+    if (p.buyUrl) {
+      need(!buyUrls.has(p.buyUrl), `"buyUrl" is the same Stripe link as "${buyUrls.get(p.buyUrl)}". ` +
+        'Each product needs its own payment link, or buyers would pay for the wrong product.');
+      buyUrls.set(p.buyUrl, p.name);
+    }
+    need(p.featured === undefined || typeof p.featured === 'boolean', '"featured" must be true or false, without quotes');
+    need(p.freeSample === undefined || (p.freeSample && typeof p.freeSample === 'object' &&
+      isText(p.freeSample.label) && isText(p.freeSample.subject)),
+    '"freeSample" needs a "label" and a "subject" (and usually a "body")');
+    need(p.freeSample === undefined || p.freeSample.body === undefined || typeof p.freeSample.body === 'string',
+      '"freeSample.body" must be text');
     for (const key of ['badge', 'intro', 'freeOffer', 'deliveryNote', 'buyLabel', 'buyNote', 'ctaTitle', 'ctaText', 'disclaimer', 'seoTitle', 'seoDescription']) {
       need(p[key] === undefined || isText(p[key]), `"${key}" must be text`);
     }
     for (const key of ['highlights', 'priceDetails', 'freeSampleTerms', 'chips']) textList(key);
+    // Text that sits right next to the price must show the same price.
+    for (const text of [p.buyLabel, ...(p.chips || [])]) {
+      for (const m of String(text || '').matchAll(/\$\d+(?:\.\d{2})?/g)) {
+        need(m[0] === p.price.label, `"buyLabel" or "chips" says ${m[0]}, but "price.label" is "${p.price.label}". Make them match.`);
+      }
+    }
+    // Search engines show 50 to 170 characters; check.mjs enforces the same range.
+    const description = plainText(p.seoDescription || p.summary, site, where);
+    need(description.length >= 50 && description.length <= 170,
+      `${p.seoDescription ? '"seoDescription"' : '"summary"'} is ${description.length} characters, but the search-engine ` +
+      'description must be 50 to 170. Change it, or add a separate "seoDescription" of 50 to 170 characters.');
     objectList('howItWorks', ['title', 'text']);
     objectList('delivery', ['label', 'value']);
     objectList('faq', ['q', 'a']);
@@ -160,14 +197,18 @@ function loadProducts() {
       ids.add(s.id);
       need(s.text === undefined || (Array.isArray(s.text) && s.text.every(isText)), `${at}: "text" must be a list of paragraphs`);
       need(s.items === undefined || (Array.isArray(s.items) && s.items.every(isText)), `${at}: "items" must be a list of text items`);
-      need(s.text || s.items, `${at} needs "text" or "items"`);
+      need((s.text && s.text.length) || (s.items && s.items.length),
+        `${at} ("${s.title}") has no "text" or "items". Add at least one, or delete the whole section from { to }.`);
       need(s.note === undefined || isText(s.note), `${at}: "note" must be text`);
       need(s.nav === undefined || isText(s.nav), `${at}: "nav" must be text`);
     });
   });
 
-  const featured = products.filter((p) => p.featured);
-  if (featured.length > 1) warn(`More than one product has "featured": true. The home page shows the first one (${featured[0].name}).`);
+  const featured = products.filter((p) => p.featured === true);
+  if (featured.length > 1) {
+    fail(`data/products.json: "featured": true is set on ${featured.length} products (${featured.map((p) => p.name).join(', ')}). ` +
+      'Only one product can be featured on the home page. Set the others to "featured": false.');
+  }
   if (featured.length === 0) warn('No product has "featured": true, so the home page shows the first product.');
   return products;
 }
@@ -205,13 +246,22 @@ function pageContext(site, pagePath) {
 // Text in products.json may use [link text](address) and **bold**, plus
 // {{email}}, {{name}} and {{x}}. An address starting with "/" is a page on
 // this site, e.g. [Refund Policy](/refund-policy/).
-function rich(text, ctx, site, where) {
+function fillValues(text, site, where) {
   const values = { email: site.email, name: site.name, x: site.x || '' };
-  const filled = text.replace(/\{\{\s*([a-zA-Z]+)\s*\}\}/g, (match, key) => {
+  return text.replace(/\{\{\s*([a-zA-Z]+)\s*\}\}/g, (match, key) => {
     if (!(key in values)) fail(`${where}: unknown placeholder ${match}. You can use {{email}}, {{name}} or {{x}}.`);
     return values[key];
   });
-  return esc(filled)
+}
+
+// The same text with placeholders filled in and **bold** / [links](...) reduced to
+// their words, for search-engine descriptions and structured data.
+function plainText(text, site, where) {
+  return fillValues(text, site, where).replace(/\*\*/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').trim();
+}
+
+function rich(text, ctx, site, where) {
+  return esc(fillValues(text, site, where))
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (match, label, href) =>
       `<a href="${href.startsWith('/') ? ctx.link(href.slice(1)) : href}">${label}</a>`);
@@ -222,7 +272,7 @@ const LOGO = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable
 function layout(site, ctx, page, body, { cssVersion, structuredData = [] }) {
   const title = ctx.isHome ? `${site.name}: ${site.tagline}` : `${page.title} | ${site.name}`;
   const navLinks = NAV.map((item) => {
-    const current = page.nav === item.key ? (page.navExact ? ' aria-current="page"' : ' class="is-section"') : '';
+    const current = page.nav === item.key ? (page.navExact ? ' aria-current="page"' : ' class="is-section" aria-current="true"') : '';
     return `<li><a href="${ctx.link(item.to)}"${current}>${esc(item.label)}</a></li>`;
   }).join('');
   const ogImage = `${site.siteUrl}assets/og-image.png`;
@@ -242,7 +292,7 @@ ${ctx.isNotFound ? '<meta name="robots" content="noindex">' : `<link rel="canoni
 <link rel="stylesheet" href="${ctx.root}assets/styles.css?v=${cssVersion}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.name)}">
-<meta property="og:title" content="${esc(ctx.isHome ? site.name : page.title)}">
+<meta property="og:title" content="${esc(ctx.isHome ? site.name : `${page.title} | ${site.name}`)}">
 <meta property="og:description" content="${esc(page.description)}">
 ${ctx.isNotFound ? '' : `<meta property="og:url" content="${esc(ctx.canonical)}">\n`}<meta property="og:image" content="${esc(ogImage)}">
 <meta property="og:image:width" content="1200">
@@ -270,6 +320,7 @@ ${footer(site, ctx)}
 
 function footer(site, ctx) {
   const list = (items) => items.map((i) => `<li><a href="${ctx.link(i.to)}">${esc(i.label)}</a></li>`).join('');
+  // role="list" keeps list semantics in Safari/VoiceOver for lists styled without bullets.
   return `<footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
@@ -279,18 +330,18 @@ function footer(site, ctx) {
       </div>
       <div>
         <h2>Contact</h2>
-        <ul>
-          <li><a class="email-link" href="mailto:${esc(site.email)}">${esc(site.email)}</a></li>
+        <ul role="list">
+          <li><a class="email-link" href="mailto:${esc(site.email)}">${emailHtml(site.email)}</a></li>
           ${site.x ? `<li><a href="${esc(site.x)}">X: ${esc(site.xHandle || site.x)}</a></li>` : ''}
         </ul>
       </div>
       <div>
         <h2>Site</h2>
-        <ul><li><a href="${ctx.link('')}">Home</a></li>${list(NAV)}</ul>
+        <ul role="list"><li><a href="${ctx.link('')}">Home</a></li>${list(NAV)}</ul>
       </div>
       <div>
         <h2>Policies</h2>
-        <ul>${list(POLICIES)}</ul>
+        <ul role="list">${list(POLICIES)}</ul>
       </div>
     </div>
     <div class="footer-bottom">
@@ -326,7 +377,7 @@ function priceLine(p, className = 'price') {
 // The small print next to every buy button: how payment works and where the policies are.
 function checkoutNote(site, ctx) {
   const lines = [
-    `Secure checkout by Stripe. We never see or store your card number.`,
+    'Secure checkout by Stripe, which is certified to PCI Service Provider Level 1. We never see or store your full card number.',
   ];
   if (site.statementDescriptor) lines.push(`Shows on your card statement as ${esc(site.statementDescriptor)}.`);
   if (site.country) lines.push(`${esc(site.name)} is based in ${esc(site.country)}.`);
@@ -337,13 +388,15 @@ function checkoutNote(site, ctx) {
 function pricePanel(site, ctx, p) {
   const comingSoon = p.status !== 'available';
   const buyNote = p.buyNote ? `<p class="price-note price-note-strong">${rich(p.buyNote, ctx, site, `data/products.json ("${p.name}") buyNote`)}</p>\n  ` : '';
+  const sampleNote = p.freeSample && !comingSoon ? `<p class="price-note">No email app? Send up to 5 listing links or ASINs to <a class="email-link" href="mailto:${esc(site.email)}">${emailHtml(site.email)}</a>.${
+    p.freeSampleTerms ? ` <a href="${ctx.link(`products/${p.slug}/`)}#free-sample-terms">Free sample terms</a>.` : ''}</p>\n  ` : '';
   return `<div class="price-panel">
   <p class="price-panel-label">${comingSoon ? 'Coming soon' : 'Price'}</p>
   ${priceLine(p)}
   ${p.freeOffer ? `<p class="price-free">${esc(p.freeOffer)}</p>` : ''}
   ${comingSoon
     ? `<a class="btn btn-secondary btn-block" href="${esc(mailto(site.email, `Tell me when ${p.name} is ready`))}">Email me when it's ready</a>`
-    : `${buyButton(p, 'btn btn-primary btn-block')}\n  ${sampleButton(site, p, 'btn btn-secondary btn-block')}\n  ${buyNote}${checkoutNote(site, ctx)}`}
+    : `${buyButton(p, 'btn btn-primary btn-block')}\n  ${sampleButton(site, p, 'btn btn-secondary btn-block')}\n  ${sampleNote}${buyNote}${checkoutNote(site, ctx)}`}
 </div>`;
 }
 
@@ -367,7 +420,7 @@ function productList(ctx, products) {
   const shown = products.slice(0, 4);
   return `<div class="product-list">
   <p class="product-list-label">Products</p>
-  <ul>${shown.map((p) => `<li><a href="${ctx.link(`products/${p.slug}/`)}"><span class="product-list-name">${esc(p.name)}</span><span class="product-list-price">${
+  <ul role="list">${shown.map((p) => `<li><a href="${ctx.link(`products/${p.slug}/`)}"><span class="product-list-name">${esc(p.name)}</span><span class="product-list-price">${
     p.status === 'coming-soon' ? 'Coming soon' : `<strong>${esc(p.price.label)} ${esc(p.price.currency)}</strong>${p.price.terms ? ` ${esc(p.price.terms)}` : ''}${p.freeOffer ? ` &middot; ${esc(p.freeOffer)}` : ''}`
   }</span></a></li>`).join('')}</ul>
   ${products.length > shown.length ? `<p class="product-list-more"><a href="${ctx.link('products/')}">See all ${products.length} products</a></p>` : ''}
@@ -383,8 +436,8 @@ function featuredSection(site, ctx, p) {
       <p class="eyebrow">Featured product</p>
       <h2 id="featured-title"><a href="${ctx.link(`products/${p.slug}/`)}">${esc(p.name)}</a></h2>
       <p class="lead">${rich(p.summary, ctx, site, where)}</p>
-      ${highlights.length ? `<ul class="checklist">${highlights.map((h) => `<li>${rich(h, ctx, site, where)}</li>`).join('')}</ul>` : ''}
-      <p><a class="text-link" href="${ctx.link(`products/${p.slug}/`)}">What we check, how it works, delivery time and FAQ <span aria-hidden="true">&rarr;</span></a></p>
+      ${highlights.length ? `<ul class="checklist" role="list">${highlights.map((h) => `<li>${rich(h, ctx, site, where)}</li>`).join('')}</ul>` : ''}
+      <p><a class="text-link" href="${ctx.link(`products/${p.slug}/`)}">See full details <span aria-hidden="true">&rarr;</span></a></p>
     </div>
     ${pricePanel(site, ctx, p)}
   </div>
@@ -396,7 +449,7 @@ function featuredSection(site, ctx, p) {
 function sectionBlock(s, r) {
   return `<h2>${esc(s.title)}</h2>
       ${(s.text || []).map((t) => `<p>${r(t)}</p>`).join('\n      ')}
-      ${s.items ? `<ul class="checklist${s.style === 'limits' ? ' limits' : ''}">${s.items.map((t) => `<li>${r(t)}</li>`).join('')}</ul>` : ''}
+      ${s.items ? `<ul class="checklist${s.style === 'limits' ? ' limits' : ''}" role="list">${s.items.map((t) => `<li>${r(t)}</li>`).join('')}</ul>` : ''}
       ${s.note ? `<p class="muted small">${r(s.note)}</p>` : ''}`;
 }
 
@@ -443,9 +496,9 @@ function productPage(site, ctx, p) {
     <div class="col" id="price">
       <h2>Price</h2>
       ${priceLine(p, 'price price-inline')}
-      ${p.priceDetails ? `<ul class="checklist">${p.priceDetails.map((t) => `<li>${r(t)}</li>`).join('')}</ul>` : ''}
+      ${p.priceDetails ? `<ul class="checklist" role="list">${p.priceDetails.map((t) => `<li>${r(t)}</li>`).join('')}</ul>` : ''}
       ${p.freeSampleTerms ? `<h3 id="free-sample-terms">Free sample terms</h3>
-      <ul class="checklist">${p.freeSampleTerms.map((t) => `<li>${r(t)}</li>`).join('')}</ul>` : ''}
+      <ul class="checklist" role="list">${p.freeSampleTerms.map((t) => `<li>${r(t)}</li>`).join('')}</ul>` : ''}
       <div class="btn-row">${buyButton(p)}${sampleButton(site, p)}</div>
     </div>` }));
   }
@@ -476,7 +529,7 @@ function productPage(site, ctx, p) {
         ${badge ? `<p class="badge">${esc(badge)}</p>` : ''}
         <h1>${esc(p.name)}</h1>
         <p class="lead">${r(p.intro || p.summary)}</p>
-        ${chips.length ? `<ul class="chips">${chips.map((c) => `<li>${r(c)}</li>`).join('')}</ul>` : ''}
+        ${chips.length ? `<ul class="chips" role="list">${chips.map((c) => `<li>${r(c)}</li>`).join('')}</ul>` : ''}
       </div>
       ${pricePanel(site, ctx, p)}
     </div>
@@ -488,16 +541,12 @@ ${ctaBand}
 ${p.disclaimer ? `<section class="section section-tight"><div class="container"><p class="muted small">${r(p.disclaimer)}</p></div></section>` : ''}`;
 }
 
-function plain(text) {
-  return text.replace(/\*\*/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
-}
-
 function productStructuredData(site, ctx, p) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: p.name,
-    description: plain(p.summary),
+    description: plainText(p.summary, site, p.name),
     url: ctx.canonical,
     provider: { '@type': 'Organization', name: site.name, url: site.siteUrl, email: site.email },
     offers: {
@@ -564,8 +613,13 @@ function outputFile(pagePath) {
 
 function build() {
   const site = loadSite();
-  const products = loadProducts();
-  const featured = products.find((p) => p.featured) || products[0];
+  const products = loadProducts(site);
+  const featured = products.find((p) => p.featured === true) || products[0];
+  // The Terms, About and Contact pages talk about this product by name, so they
+  // must point at it even when another product is featured on the home page.
+  const bundle = products.find((p) => p.slug === 'amazon-bundle-rule-check') ||
+    fail('data/products.json: the Terms, About and Contact pages describe the product with slug "amazon-bundle-rule-check". ' +
+      'Keep that product, or update those pages first.');
   const cssVersion = hash(readText('src/assets/styles.css'));
 
   // GitHub writes docs/CNAME itself when a custom domain is set in Settings > Pages.
@@ -594,13 +648,14 @@ function build() {
       name: esc(site.name),
       tagline: esc(site.tagline),
       email: esc(site.email),
+      emailWrap: emailHtml(site.email),
       emailHref: esc(`mailto:${site.email}`),
       x: esc(site.x || ''),
       xHandle: esc(site.xHandle || ''),
       disclaimer: esc(site.disclaimer),
       policyUpdated: esc(formatDate(site.policyUpdated)),
       draftNotice: site.policyStatus
-        ? `<p class="notice"><strong>${esc(site.policyStatus)}</strong><span>Plain-English draft, not legal advice. Last updated ${esc(formatDate(site.policyUpdated))}.</span></p>`
+        ? `<p class="notice"><strong>${esc(site.policyStatus)}</strong><span>Plain-English draft. Last updated ${esc(formatDate(site.policyUpdated))}.</span></p>`
         : `<p class="updated">Last updated ${esc(formatDate(site.policyUpdated))}</p>`,
       // Facts only the owner can supply. Each line stays out of the pages until its field in data/site.json is filled in.
       operator: esc(`${site.name} is a small, independent online-services business${
@@ -614,8 +669,9 @@ function build() {
       featured: () => featuredSection(site, ctx, featured),
       featuredName: esc(featured.name),
       featuredUrl: ctx.link(`products/${featured.slug}/`),
-      featuredBuy: esc(featured.buyUrl || ''),
-      featuredSample: esc(sampleHref(site, featured)),
+      bundleName: esc(bundle.name),
+      bundleUrl: ctx.link(`products/${bundle.slug}/`),
+      bundleSample: esc(sampleHref(site, bundle) || `mailto:${site.email}`),
       productGrid: () => `<div class="grid">${products.map((p) => productCard(site, ctx, p)).join('\n')}</div>`,
       productList: () => productList(ctx, products),
     };
@@ -640,8 +696,8 @@ function build() {
     const pagePath = `products/${p.slug}/`;
     const ctx = pageContext(site, pagePath);
     const page = {
-      title: p.seoTitle || p.name,
-      description: p.seoDescription || p.summary.replace(/\*\*|\[|\]\([^)]*\)/g, ''),
+      title: p.seoTitle ? plainText(p.seoTitle, site, p.name) : p.name,
+      description: plainText(p.seoDescription || p.summary, site, p.name),
       nav: 'products',
       navExact: false,
     };
@@ -661,7 +717,7 @@ function build() {
 
   if (site.customDomain) {
     writeOut('CNAME', `${site.customDomain}\n`);
-  } else if (oldCname) {
+  } else if (oldCname && !site.forOtherHost) {
     writeOut('CNAME', `${oldCname}\n`);
     warn(`Kept docs/CNAME (${oldCname}). Set "siteUrl" in data/site.json to https://${oldCname}/ so links and the sitemap match.`);
   }

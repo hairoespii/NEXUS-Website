@@ -23,6 +23,7 @@ const problem = (file, message) => problems.push(`${file}: ${message}`);
 
 const site = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/site.json'), 'utf8'));
 if (process.env.SITE_URL) site.siteUrl = process.env.SITE_URL;
+site.siteUrl = new URL(site.siteUrl).href.replace(/\/?$/, '/'); // the same clean-up build.mjs does
 const { products } = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/products.json'), 'utf8'));
 const basePath = new URL(site.siteUrl).pathname.replace(/\/?$/, '/');
 
@@ -96,13 +97,20 @@ for (const [file, text] of html) {
   const title = text.match(/<title>([^<]*)<\/title>/);
   if (!title || !title[1].trim()) problem(file, 'missing a <title>');
   const description = text.match(/<meta name="description" content="([^"]*)">/);
-  if (!description || description[1].trim().length < 50) problem(file, 'missing a meta description (or it is very short)');
-  if (description && decode(description[1]).length > 170) problem(file, `meta description is long (${decode(description[1]).length} characters; aim for 170 or fewer)`);
+  const where = file.startsWith('products/') && file !== 'products/index.html'
+    ? '"seoDescription" in data/products.json ("summary" is used if there is none)'
+    : 'the "description:" line at the top of its src/pages file';
+  if (!description || description[1].trim().length < 50) problem(file, `missing a meta description, or it is under 50 characters. Change ${where}.`);
+  if (description && decode(description[1]).length > 170) problem(file, `meta description is ${decode(description[1]).length} characters; the limit is 170. Shorten ${where}.`);
   const h1s = (text.match(/<h1[\s>]/g) || []).length;
   if (h1s !== 1) problem(file, `should have exactly one <h1> main heading, found ${h1s}`);
   if (file !== '404.html' && !text.includes(`<link rel="canonical" href="${site.siteUrl.replace(/\/?$/, '/')}`)) problem(file, 'missing its canonical address');
   const visible = text.replace(/<script[\s\S]*?<\/script>/g, '');
-  if (/\{\{|\}\}/.test(visible)) problem(file, 'still contains a {{placeholder}}');
+  if (/\{\{|\}\}/.test(visible)) {
+    const left = visible.match(/\{\{[^}]*\}\}/);
+    problem(file, `still contains ${left ? left[0] : 'a {{placeholder}}'}. {{name}}, {{email}} and {{x}} don't work in "name", "badge", ` +
+      '"price", "freeOffer", "buyLabel", "ctaTitle" or a section "title" in data/products.json. Type the words out instead.');
+  }
   if (/TODO|FIXME|lorem ipsum/i.test(text)) problem(file, 'contains TODO / FIXME / lorem ipsum text');
 
   // Footer on every page.

@@ -26,7 +26,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 88px; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 12px; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 
 body {
@@ -39,6 +39,7 @@ body {
   font: 400 1.0625rem/1.65 var(--font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
 }
 main { flex: 1; }
 
@@ -71,6 +72,7 @@ strong { font-weight: 650; color: var(--text); }
 .site-header { border-bottom: 1px solid var(--border); background: rgba(6, 10, 19, 0.92); }
 @media (min-width: 720px) {
   .site-header { position: sticky; top: 0; z-index: 10; backdrop-filter: saturate(140%) blur(10px); -webkit-backdrop-filter: saturate(140%) blur(10px); }
+  html { scroll-padding-top: 88px; }
 }
 .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 24px; min-height: 68px; padding-top: 8px; padding-bottom: 8px; }
 
@@ -78,7 +80,7 @@ strong { font-weight: 650; color: var(--text); }
 .brand:hover { color: var(--text); }
 .brand .logo { width: 32px; height: 32px; flex: none; }
 
-.site-nav ul { display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.site-nav ul { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .site-nav a { display: block; padding: 9px 14px; border-radius: 10px; color: var(--text-muted); font-weight: 550; font-size: 0.98rem; text-decoration: none; }
 .site-nav a:hover { color: var(--text); background: var(--surface); }
 .site-nav a[aria-current="page"], .site-nav a.is-section { color: var(--text); background: var(--surface); box-shadow: inset 0 -2px 0 var(--accent); }
@@ -148,6 +150,7 @@ strong { font-weight: 650; color: var(--text); }
 /* ---------- cards ---------- */
 
 .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+.grid:has(> .card:only-child) { grid-template-columns: minmax(0, 680px); }
 .card { display: flex; flex-direction: column; gap: 12px; padding: 26px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 .card p { margin: 0; color: var(--text-muted); }
 .card h3, .card h2 { margin: 0; }
@@ -165,6 +168,7 @@ strong { font-weight: 650; color: var(--text); }
 
 .steps-3 { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); margin: 0; padding: 0; list-style: none; counter-reset: step; }
 .steps-3 li { counter-increment: step; }
+@media (min-width: 720px) { .steps-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .steps-3 li::before { content: counter(step, decimal-leading-zero); display: block; margin-bottom: 4px; color: var(--accent); font-weight: 700; font-size: 0.9rem; letter-spacing: 0.08em; }
 
 /* ---------- featured product / price panel ---------- */
@@ -207,6 +211,7 @@ strong { font-weight: 650; color: var(--text); }
 .wide p strong { color: var(--text); }
 
 .steps { display: grid; gap: 16px; margin: 24px 0 0; padding: 0; list-style: none; counter-reset: step; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+@media (max-width: 559px) { .steps { grid-template-columns: minmax(0, 1fr); } }
 .steps li { counter-increment: step; position: relative; padding: 22px; padding-top: 64px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 .steps li::before { content: counter(step); position: absolute; top: 20px; left: 22px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 750; }
 .steps h3 { font-size: 1.05rem; margin-bottom: 6px; }
@@ -231,7 +236,7 @@ strong { font-weight: 650; color: var(--text); }
 .product-hero .lead { margin-bottom: 24px; }
 
 .breadcrumb ol { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 28px; padding: 0; list-style: none; color: var(--text-faint); font-size: 0.92rem; }
-.breadcrumb li + li::before { content: "/"; margin-right: 6px; color: var(--text-faint); }
+.breadcrumb li + li::before { content: "/"; content: "/" / ""; margin-right: 6px; color: var(--text-faint); }
 .breadcrumb a { color: var(--text-muted); text-decoration: none; }
 .breadcrumb a:hover { color: var(--accent); }
 
@@ -240,8 +245,8 @@ strong { font-weight: 650; color: var(--text); }
 .jump a { color: var(--text-muted); font-size: 0.95rem; font-weight: 550; text-decoration: none; }
 .jump a:hover { color: var(--accent); }
 
-.faq { display: grid; gap: 14px; margin-top: 24px; }
-@media (min-width: 860px) { .faq { grid-template-columns: 1fr 1fr; } }
+.faq { display: grid; gap: 14px; margin-top: 24px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 860px) { .faq { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .faq-item { padding: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 .faq-item h3 { font-size: 1.05rem; margin-bottom: 8px; }
 .faq-item p { margin: 0; color: var(--text-muted); }
@@ -254,7 +259,8 @@ strong { font-weight: 650; color: var(--text); }
 
 .page-head { padding: clamp(40px, 7vw, 80px) 0 clamp(24px, 4vw, 40px); }
 .page-head h1 { max-width: 20ch; }
-.prose { max-width: 72ch; padding-bottom: clamp(48px, 7vw, 88px); }
+.prose { padding-bottom: clamp(48px, 7vw, 88px); }
+.prose > * { max-width: 72ch; }
 .prose h2 { font-size: 1.4rem; margin-top: 2em; }
 .prose h2:first-child { margin-top: 0; }
 .prose h3 { margin-top: 1.5em; }
@@ -274,8 +280,10 @@ strong { font-weight: 650; color: var(--text); }
 .contact-card { display: grid; gap: 14px; justify-items: start; max-width: 640px; margin-bottom: 40px; padding: 28px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); }
 .contact-card p { margin: 0; }
 .contact-email { font-size: clamp(1.15rem, 1rem + 1.2vw, 1.6rem); font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
+.contact-email a { color: inherit; text-decoration: none; }
+.contact-email a:hover { color: var(--accent); }
 
-.email-link { overflow-wrap: anywhere; }
+.email-link, a[href^="mailto:"]:not(.btn) { overflow-wrap: anywhere; }
 .after-grid { margin-top: 28px; }
 
 /* ---------- footer ---------- */
@@ -292,6 +300,11 @@ strong { font-weight: 650; color: var(--text); }
 .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.9rem; }
 .footer-bottom p { margin: 0; }
 .disclaimer { color: var(--text); font-weight: 600; }
+
+/* Windows high-contrast mode drops box-shadows, so mark the current page with an underline. */
+@media (forced-colors: active) {
+  .site-nav a[aria-current="page"], .site-nav a.is-section { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+}
 
 /* ---------- print ---------- */
 

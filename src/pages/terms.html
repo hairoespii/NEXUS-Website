@@ -12,7 +12,7 @@ policy: true
 </section>
 
 <div class="container prose">
-  <p>These terms explain how {{name}} ("we", "us") works with you. When you buy one of our services, you agree to them. We've kept them short and in plain English.</p>
+  <p>These terms explain how {{name}} ("we", "us") works with you. When you ask for a free sample or buy one of our services, you agree to them. We've kept them short and in plain English.</p>
 
   <h2>1. Who we are</h2>
   <p>{{operator}} You can reach us at <a class="email-link" href="{{emailHref}}">{{email}}</a>.</p>
@@ -21,7 +21,7 @@ policy: true
   <p>Our services are for people buying for their business. To buy, you must be at least 18.</p>
 
   <h2>3. What we sell</h2>
-  <p>We sell simple online services. Each product page explains what's included, the price and the delivery time, and that description is part of these terms. Our first service is the <a href="{{featuredUrl}}">{{featuredName}}</a>.</p>
+  <p>We sell simple online services. Each product page explains what's included, the price and the delivery time, and that description is part of these terms. Our first service is the <a href="{{bundleUrl}}">{{bundleName}}</a>.</p>
 
   <h2>4. Not affiliated with Amazon. Not legal advice.</h2>
   <ul>
@@ -31,26 +31,27 @@ policy: true
     <li>Amazon makes the final decisions about your listings. We can't guarantee any result on Amazon.</li>
   </ul>
 
-  <h2>5. Free sample</h2>
+  <h2>5. Free sample ({{bundleName}})</h2>
   <p>The free sample checks up to 5 bundle listings, delivered by email. It costs nothing, needs no payment details, bills nothing afterwards and carries no obligation to buy. It's limited to one free sample per Amazon seller account.</p>
 
   <h2>6. Prices and payment</h2>
   <ul>
-    <li>Prices are in US dollars (USD) and shown on each product page. The {{featuredName}} is $29 USD, one time, per catalog.</li>
-    <li>Payment is one-time and handled by Stripe on its secure checkout page. Your card details never reach our website, and we never see or store your card number.</li>
+    <li>Prices are set in US dollars (USD) and shown on each product page. The {{bundleName}} is $29 USD, one time, per catalog.</li>
+    <li>Outside the US, Stripe's checkout may offer to charge you in your local currency instead, converted at Stripe's rate. You see the exact amount and currency before you pay, and you can choose USD.</li>
+    <li>Payment is one-time and handled by Stripe on its secure checkout page. Your card details never reach our website, and we never see or store your full card number.</li>
     <li>There are no subscriptions and no automatic renewals.</li>
     {{statementLine}}
   </ul>
 
   <h2>7. What you send us, and delivery</h2>
   <ul>
-    <li>Send us the Amazon links or ASINs of the listings you want checked, from the email address you used at checkout.</li>
+    <li>Send us the Amazon links or ASINs of the listings you want checked, and the Amazon store you sell in, from the email address you used at checkout.</li>
     <li>Never send us your passwords. We will never ask for them.</li>
-    <li>We deliver by email within the time shown on the product page, counted from when we have your payment and your listings. If we need more time, we'll tell you by email before that deadline.</li>
+    <li>We deliver by email within the time shown on the product page, counted from when we have your payment and your listings. If we need more time, we'll email you before that deadline to agree on a new date. If you'd rather not wait, you can have a full refund.</li>
   </ul>
 
   <h2>8. Refunds and cancellations</h2>
-  <p>You can cancel for a full refund before we start your check. If your report is late, or leaves out listings or doesn't match the product description, we'll fix it or refund you in full. The <a href="{{root}}refund-policy/">Refund Policy</a> has the details.</p>
+  <p>You can cancel for a full refund until we reply to confirm we've received your listings. If we can't do your check, or your report is late, you can have a full refund. If your report leaves out listings you sent us, gets a fact about your listings wrong or doesn't match the product page, tell us within 14 days of delivery and we'll fix it, or refund you in full if we can't. The <a href="{{root}}refund-policy/">Refund and Cancellation Policy</a> has the details.</p>
 
   <h2>9. Your part</h2>
   <ul>
@@ -59,7 +60,7 @@ policy: true
   </ul>
 
   <h2>10. Your report and our website</h2>
-  <p>Once you've paid, the report we send you is yours to use in your own business. The content of this website belongs to {{name}}.</p>
+  <p>The free sample results and paid reports we send you are yours to use in your own business. The content of this website belongs to {{name}}.</p>
 
   <h2>11. Limits on our responsibility</h2>
   <p>We work carefully, but mistakes can happen and Amazon's rules can change. As far as the law allows, our total responsibility for any claim about a service is limited to the amount you paid us for that service, and we aren't responsible for indirect losses such as lost sales or profits. Nothing in these terms takes away rights you have under laws that can't be changed by agreement.</p>

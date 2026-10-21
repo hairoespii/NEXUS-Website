@@ -8,10 +8,12 @@ Nothing here costs money.
 
 GitHub Pages is not switched on yet, so the site is not live. Only the repository owner can switch it on.
 
-1. Open https://github.com/hairoespii/NEXUS-Website/settings/pages
-2. **Source:** Deploy from a branch.
-3. **Branch:** `ccr-7b44bd0d-q5fvks` (or `main`, after this branch is merged into it). **Folder:** `/docs`. Click **Save**.
-4. Wait up to 10 minutes. The site appears at https://hairoespii.github.io/NEXUS-Website/
+1. Merge the site into `main`: open https://github.com/hairoespii/NEXUS-Website/compare/main...ccr-7b44bd0d-q5fvks,
+   click **Create pull request**, then **Merge pull request**. (Optional but recommended: the repository's
+   front page then shows the site, and `main` is the branch you edit later.)
+2. Open https://github.com/hairoespii/NEXUS-Website/settings/pages. **Source:** Deploy from a branch.
+3. **Branch:** `main` (or `ccr-7b44bd0d-q5fvks` if you skipped step 1). **Folder:** `/docs`. Click **Save**.
+4. Wait up to 10 minutes. The site appears at https://hairoespii.github.io/NEXUS-Website/. Tick **Enforce HTTPS**.
 
 **Hosting caution.** GitHub's terms say Pages "is not intended for or allowed to be used as a free web
 hosting service to run your online business, e-commerce site, or any other website that is primarily
@@ -32,9 +34,11 @@ These appear on the product page and in the policies. Change any you don't agree
 | We check against Amazon's **US** bundling policy; other stores: email first | `data/products.json` → `faq` |
 | **What we look at / What we don't do** (seller-assembled bundles, Amazon's exceptions, listing basics; no logins, no changes to listings, no contact with brands or Amazon) | `data/products.json` → `sections` |
 | Report is **a written report, by email** | `data/products.json` → `delivery`, `sections` |
-| **Full refund** if cancelled before work starts, or if the report is late | `src/pages/refund-policy.html`, `src/pages/terms.html` |
-| Report problems **within 14 days** of delivery → fix or full refund | `src/pages/refund-policy.html` |
-| **No refund for change of mind** after a report is delivered | `src/pages/refund-policy.html` |
+| **Full refund** if cancelled before work starts. Work "starts" when **you reply to confirm you've received the buyer's listings**, so send that short reply every time | `src/pages/refund-policy.html`, `src/pages/terms.html`, `data/products.json` → `buyNote` |
+| **Full refund** if the report is late (claim within 14 days of getting a late report), or if we can't do the check (e.g. a non-US store) | `src/pages/refund-policy.html`, `src/pages/terms.html` |
+| If we need more time, we **email before the deadline to agree a new date**; the buyer may take a full refund instead | `data/products.json` → `deliveryNote`; `src/pages/terms.html` |
+| Report problems (missing listings, a wrong fact, not as described) **within 14 days** of delivery → fix or full refund | `src/pages/refund-policy.html`, `src/pages/terms.html` |
+| **No refund for change of mind** once work has started | `src/pages/refund-policy.html` |
 | Buyers must be **18+ and buying for their business** | `src/pages/terms.html` |
 | We **never ask for passwords** and **don't send marketing emails** | `src/pages/about.html`, `src/pages/terms.html`, `src/pages/privacy.html` |
 | Order records kept **as long as tax rules require**; unused free-sample emails deleted **within 12 months** | `src/pages/privacy.html` |
@@ -73,10 +77,15 @@ Don't redo the Payment Link. These are settings around it.
    and show your policies at checkout. Card issuers give more weight to terms the buyer ticked.
 4. Reply to Stripe's request with the website link **well before November 18, 2026**.
 
+**Currency:** your Payment Link offers buyers outside the US their local currency (Stripe's Adaptive
+Pricing; the checkout showed euros from a European connection). The site explains this. If you'd rather
+charge USD only, turn Adaptive Pricing off in the Stripe Dashboard.
+
 ## 6. Later
 
 - **After January 11, 2027:** the product page talks about checking listings "before January 11, 2027" and
-  "before the deadline". Update that wording in `data/products.json` (`intro`, `ctaTitle`, `whoItsFor`).
+  "before the deadline". Update that wording in `data/products.json` (`intro`, `ctaTitle`, and the
+  `who-its-for` block in `sections`) and the home page lead in `src/pages/home.html`.
 - **Keep "Last checked" honest:** the product page cites Amazon's announcement and policy page, "Last checked
   October 21, 2026". Re-read those pages now and then and update the date in `data/products.json` (`sections` → `the-rule` → `note`).
 - **Custom domain:** see "Moving to a custom domain later" in `README.md`. Buying the domain is the only step that costs money.

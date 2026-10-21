@@ -13,6 +13,7 @@ name: Rebuild site
 
 on:
   push:
+    branches: ["**"]
     paths:
       - "data/**"
       - "src/**"
@@ -33,7 +34,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # Build the branch as it is now, not the commit that started this run,
+      # so two quick edits in a row both end up on the live site.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - uses: actions/setup-node@v4
         with:
@@ -65,9 +70,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          source=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.source.branch' 2>/dev/null || true)
-          if [ -z "$source" ]; then
-            echo "GitHub Pages isn't switched on for this repository yet, so there is nothing to publish."
+          if ! source=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.source.branch' 2>/dev/null) || [ -z "$source" ]; then
+            echo "GitHub Pages isn't switched on for this repository yet (or this workflow can't read its settings), so there is nothing to publish."
             exit 0
           fi
           if [ "$source" != "${GITHUB_REF_NAME}" ]; then

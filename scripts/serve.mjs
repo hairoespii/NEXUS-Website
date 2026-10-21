@@ -16,6 +16,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DOCS = path.join(ROOT, 'docs');
 const site = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/site.json'), 'utf8'));
 if (process.env.SITE_URL) site.siteUrl = process.env.SITE_URL;
+site.siteUrl = new URL(site.siteUrl).href;
 const basePath = new URL(site.siteUrl).pathname.replace(/\/?$/, '/');
 const port = Number(process.env.PORT) || 8000;
 
@@ -42,9 +43,10 @@ http.createServer((req, res) => {
   if (`${url.pathname}/` === basePath) { res.writeHead(301, { Location: basePath }); res.end(); return; }
   if (!url.pathname.startsWith(basePath)) { notFound(res); return; }
 
-  const rel = decodeURIComponent(url.pathname.slice(basePath.length));
+  let rel;
+  try { rel = decodeURIComponent(url.pathname.slice(basePath.length)); } catch { notFound(res); return; }
   const file = path.join(DOCS, rel);
-  if (!file.startsWith(DOCS)) { notFound(res); return; }
+  if (file !== DOCS && !file.startsWith(DOCS + path.sep)) { notFound(res); return; }
   let stat = fs.existsSync(file) ? fs.statSync(file) : null;
   if (stat && stat.isDirectory()) {
     if (!url.pathname.endsWith('/')) { res.writeHead(301, { Location: `${url.pathname}/${url.search}` }); res.end(); return; }

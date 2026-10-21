@@ -6,7 +6,7 @@
       "status": "available",
       "featured": true,
       "badge": "New",
-      "summary": "We review your Amazon bundle listings against Amazon's updated bundling policy, which takes effect January 11, 2027, and flag the ones that may need attention. Free 5-listing sample, then $29 USD one-time per catalog.",
+      "summary": "We review your Amazon bundle listings against Amazon's updated bundling policy, which takes effect January 11, 2027, and flag the ones that may need attention.",
       "intro": "From January 11, 2027, Amazon will require most bundles listed as a single ASIN to be packaged by the original manufacturer or brand, with a few exceptions. We review your bundle listings against Amazon's published policy and tell you, in plain English, which ones may need attention, so you can decide what to do before the deadline.",
       "seoDescription": "Get your Amazon bundle listings reviewed against Amazon's bundling policy update effective January 11, 2027. Free 5-listing sample, then $29 USD per catalog.",
       "highlights": [
@@ -14,16 +14,26 @@
         "A plain-English report by email that flags listings that may need attention, and why",
         "A free 5-listing sample first, so you see the work before you pay"
       ],
-      "chips": ["Free 5-listing sample", "$29 USD one-time per catalog", "Report by email", "No sales calls"],
-      "price": { "amount": 29, "currency": "USD", "label": "$29", "terms": "one-time, per catalog" },
+      "chips": [
+        "Free 5-listing sample",
+        "$29 USD one-time per catalog",
+        "Report by email",
+        "No sales calls"
+      ],
+      "price": {
+        "amount": 29,
+        "currency": "USD",
+        "label": "$29",
+        "terms": "one-time, per catalog"
+      },
       "freeOffer": "Free 5-listing sample first",
       "buyUrl": "https://buy.stripe.com/aFa00k4Ug2GTdg8d0u2ZO00",
       "buyLabel": "Buy the full check: $29",
-      "buyNote": "Report by email within 5 business days of getting your listings. Cancel before we start for a full refund.",
+      "buyNote": "Full check: after paying, email us your bundle listings. Report within 5 business days of getting your payment and your listings. Cancel before we start for a full refund.",
       "freeSample": {
         "label": "Get my free 5-listing sample",
         "subject": "Free 5-listing sample: Amazon Bundle Rule Check",
-        "body": "Hi NEXUS Research,\n\nPlease check these bundle listings for my free sample (up to 5 Amazon links or ASINs):\n\n1.\n2.\n3.\n4.\n5.\n\nAmazon store I sell in (for example amazon.com):\n\nThanks!"
+        "body": "Hi NEXUS Research,\n\nPlease check these bundle listings for my free sample (up to 5 Amazon links or ASINs):\n\n1.\n2.\n3.\n4.\n5.\n\nAmazon store I sell in (for example amazon.com):\nMy seller name on Amazon:\n\nThanks!"
       },
       "sections": [
         {
@@ -32,7 +42,7 @@
           "title": "What's changing on January 11, 2027",
           "text": [
             "Amazon has announced an update to its **Product bundling policy** that takes effect on **January 11, 2027**. Under the update, most product bundles listed as a single ASIN must be packaged by the original manufacturer or brand.",
-            "Amazon lists exceptions, including bundles covered by a letter of authorization from the brand, bundles in gifting browse nodes and camera product types, and bundles created with Amazon's Virtual Bundles tool. Amazon is also removing some earlier bundle restrictions.",
+            "Amazon lists exceptions, including bundles covered by a letter of authorization from the brands or manufacturers of all the products in the bundle, bundles in gifting browse nodes and camera product types, and bundles created with Amazon's Virtual Bundles tool (which Amazon says may not yet be available for every store, brand or fulfillment channel). Amazon is also removing some earlier bundle restrictions.",
             "Amazon says bundles that are still noncompliant after January 11 will be deactivated and become listing violations on the seller's Account Health dashboard, and that it will notify sellers by email."
           ],
           "note": "Sources: Amazon's announcement [New requirements for product bundles starting January 11](https://sellercentral.amazon.com/seller-forums/discussions/t/da850a57-839d-4e38-a96f-298dbc450b69) on the Amazon Seller Forums (September 2026) and Amazon's [Product bundling policy](https://sellercentral.amazon.com/help/hub/reference/external/G200442350) page. Last checked October 21, 2026. Amazon can change its policies at any time, so always confirm in your own Seller Central account."
@@ -54,7 +64,7 @@
           "title": "Who it's for",
           "column": true,
           "items": [
-            "Amazon sellers who list bundles: two or more complementary products sold together as one listing",
+            "Amazon sellers who list bundles in Amazon's US store (amazon.com): two or more complementary products sold together as one listing",
             "Sellers whose bundles are put together by the seller rather than packaged by the brand",
             "Sellers who want their bundle listings checked before January 11, 2027",
             "Small sellers who don't have time to read the policy and check every listing themselves"
@@ -63,12 +73,12 @@
         {
           "id": "what-we-check",
           "nav": "What we check",
-          "title": "What we look at",
+          "title": "What we check",
           "column": true,
           "items": [
             "Whether a bundle looks like it was put together by the seller rather than packaged by the original manufacturer or brand",
-            "Whether one of Amazon's listed exceptions may apply: a letter of authorization from the brand, a gifting browse node, a camera product type, or a Virtual Bundle",
-            "Amazon's bundle listing basics: the word \"Bundle\" in the title, a description and first bullet point that name every item, and a main image that shows everything in the bundle"
+            "Whether one of Amazon's listed exceptions may apply: a letter of authorization from the brands or manufacturers of all the products in the bundle, a gifting browse node, a camera product type, or a virtual bundle made with Amazon's Virtual Bundles tool",
+            "Amazon's bundle listing basics: the word \"Bundle\" in the title; a description that says it's a bundle and names every item; a first bullet point that says it's a bundle of a stated number of items and names them; and a main image that shows every item in the bundle and nothing that isn't included"
           ]
         },
         {
@@ -85,24 +95,47 @@
         }
       ],
       "howItWorks": [
-        { "title": "Send up to 5 listings, free", "text": "Email us the Amazon links or ASINs of up to 5 bundle listings. No payment needed." },
-        { "title": "Get your sample results", "text": "We check those listings and email you what we found." },
-        { "title": "Order the full check", "text": "If you want the rest checked, pay $29 USD once through Stripe's secure checkout." },
-        { "title": "Send your catalog", "text": "Email us the links or ASINs of the bundle listings in your catalog, from the email address you used at checkout." },
-        { "title": "Get your report", "text": "We review your bundle listings and email you the report." }
+        {
+          "title": "Send up to 5 listings, free",
+          "text": "Email [{{email}}](mailto:{{email}}) the Amazon links or ASINs of up to 5 bundle listings. No payment needed."
+        },
+        {
+          "title": "Get your sample results",
+          "text": "We check those listings and email you what we found."
+        },
+        {
+          "title": "Order the full check",
+          "text": "If you want your whole catalog checked, pay $29 USD once through Stripe's secure checkout."
+        },
+        {
+          "title": "Send your catalog",
+          "text": "Email [{{email}}](mailto:{{email}}) the links or ASINs of the bundle listings in your catalog, and the Amazon store you sell in, from the email address you used at checkout."
+        },
+        {
+          "title": "Get your report",
+          "text": "We review your bundle listings and email you the report."
+        }
       ],
       "delivery": [
-        { "label": "Free sample", "value": "Within 2 business days of getting your listings" },
-        { "label": "Full catalog check", "value": "Within 5 business days of getting your payment and your listings" },
-        { "label": "How it's delivered", "value": "A written report, by email" }
+        {
+          "label": "Free sample",
+          "value": "Within 2 business days of getting your listings"
+        },
+        {
+          "label": "Full catalog check",
+          "value": "Within 5 business days of getting your payment and your listings"
+        },
+        {
+          "label": "How it's delivered",
+          "value": "A written report, by email"
+        }
       ],
-      "deliveryNote": "If we ever need more time, we'll tell you by email before that deadline.",
+      "deliveryNote": "If we ever need more time, we'll email you before the deadline to agree on a new date. If you'd rather not wait, you can have a full refund.",
       "priceDetails": [
-        "**$29 USD**, paid once, for one catalog",
-        "Paid on Stripe's secure checkout page. We never see or store your card number.",
-        "Stripe's checkout may offer to show the price in your local currency.",
+        "Paid on Stripe's secure checkout page. We never see or store your full card number.",
+        "The price is set in US dollars. Outside the US, Stripe's checkout may offer to charge you in your local currency instead. You see the exact amount before you pay, and you can choose USD.",
         "No subscription and no automatic renewal",
-        "Changed your mind before we start? Full refund. See our [Refund Policy](/refund-policy/).",
+        "Changed your mind before we start? Full refund. See our [Refund and Cancellation Policy](/refund-policy/).",
         "Buying means you agree to our [Terms of Service](/terms/)."
       ],
       "freeSampleTerms": [
@@ -112,18 +145,54 @@
         "One free sample per Amazon seller account."
       ],
       "faq": [
-        { "q": "What is Amazon's new bundle rule?", "a": "It's an update to Amazon's Product bundling policy that takes effect on January 11, 2027. Under it, most bundles listed as a single ASIN must be packaged by the original manufacturer or brand, with some exceptions. See [Amazon's announcement](https://sellercentral.amazon.com/seller-forums/discussions/t/da850a57-839d-4e38-a96f-298dbc450b69) for the official wording." },
-        { "q": "What happens to bundles that don't meet it?", "a": "Amazon says bundles that are still noncompliant after January 11 will be deactivated and become listing violations on your Account Health dashboard, and that it will notify sellers by email." },
-        { "q": "Which Amazon store does this cover?", "a": "Amazon posted the update on its US Seller Central forum, and we check against Amazon's US Product bundling policy. If you sell in another Amazon store, email us before you buy." },
-        { "q": "What do I need to send you?", "a": "The Amazon links or ASINs of your bundle listings. For the free sample, up to 5." },
-        { "q": "Do you need my Seller Central login or password?", "a": "No. We never ask for your password or access to your account." },
-        { "q": "What counts as one catalog?", "a": "The bundle listings sold under one Amazon seller account. If you're not sure, email us before you buy and we'll confirm." },
-        { "q": "Can you guarantee Amazon will accept my listings?", "a": "No. We review your listings carefully against the policy as Amazon has published it, but only Amazon decides how its policies apply." },
-        { "q": "What if Amazon changes the policy?", "a": "We check against the policy as Amazon has published it on the day we review your listings." },
-        { "q": "Are you part of Amazon? Is this legal advice?", "a": "No to both. {{name}} is an independent service, not affiliated with Amazon, and our review is not legal advice." },
-        { "q": "How do I pay?", "a": "Click Buy and pay on Stripe's secure checkout page. If you have any trouble paying, email [{{email}}](mailto:{{email}})." },
-        { "q": "Will I have to get on a call?", "a": "No. There are no sales calls. Everything happens by email." },
-        { "q": "What if something is wrong with my report?", "a": "Email us and tell us what's wrong. We'll fix it, or refund you as our [Refund Policy](/refund-policy/) explains." }
+        {
+          "q": "What is Amazon's new bundle rule?",
+          "a": "It's an update to Amazon's Product bundling policy that takes effect on January 11, 2027. Under it, most bundles listed as a single ASIN must be packaged by the original manufacturer or brand, with some exceptions. See [Amazon's announcement](https://sellercentral.amazon.com/seller-forums/discussions/t/da850a57-839d-4e38-a96f-298dbc450b69) for the official wording."
+        },
+        {
+          "q": "What happens to bundles that don't meet it?",
+          "a": "Amazon says bundles that are still noncompliant after January 11 will be deactivated and become listing violations on your Account Health dashboard, and that it will notify sellers by email."
+        },
+        {
+          "q": "Which Amazon store does this cover?",
+          "a": "Amazon posted the update on its US Seller Central forum, and we check against Amazon's US Product bundling policy. If you sell in another Amazon store, email us before you buy."
+        },
+        {
+          "q": "What do I need to send you?",
+          "a": "The Amazon links or ASINs of your bundle listings, and which Amazon store you sell in (for example amazon.com). For the free sample, up to 5."
+        },
+        {
+          "q": "Do you need my Seller Central login or password?",
+          "a": "No. We never ask for your password or access to your account."
+        },
+        {
+          "q": "What counts as one catalog?",
+          "a": "The bundle listings sold under one Amazon seller account. If you're not sure, email us before you buy and we'll confirm."
+        },
+        {
+          "q": "Can you guarantee Amazon will accept my listings?",
+          "a": "No. We review your listings carefully against the policy as Amazon has published it, but only Amazon decides how its policies apply."
+        },
+        {
+          "q": "What if Amazon changes the policy?",
+          "a": "We check against the policy as Amazon has published it on the day we review your listings. If Amazon changes it later, your report won't reflect that change. See our [Refund Policy](/refund-policy/)."
+        },
+        {
+          "q": "Are you part of Amazon? Is this legal advice?",
+          "a": "No to both. {{name}} is an independent service, not affiliated with Amazon, and our review is not legal advice."
+        },
+        {
+          "q": "How do I pay?",
+          "a": "Click Buy and pay on Stripe's secure checkout page. If you have any trouble paying, email [{{email}}](mailto:{{email}})."
+        },
+        {
+          "q": "Will I have to get on a call?",
+          "a": "No. There are no sales calls. Everything happens by email."
+        },
+        {
+          "q": "What if something is wrong with my report?",
+          "a": "Email us and tell us what's wrong. We'll fix it, or refund you as our [Refund Policy](/refund-policy/) explains."
+        }
       ],
       "ctaTitle": "Check your bundle listings before January 11, 2027",
       "ctaText": "Start with a free 5-listing sample. Questions? Email [{{email}}](mailto:{{email}}).",
