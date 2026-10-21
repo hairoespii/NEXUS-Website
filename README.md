@@ -70,6 +70,25 @@ says so. Once the policies are final, set `"policyStatus": ""` and the label dis
 3. Choose the branch that holds this site (for now `ccr-7b44bd0d-q5fvks`, or `main` once it's merged) and the folder **/docs**. Click **Save**.
 4. After a minute or two the site is live at https://hairoespii.github.io/NEXUS-Website/.
 
+### Other free hosts
+
+GitHub's terms say Pages is not meant "to run your online business, e-commerce site, or any other website
+that is primarily directed at either facilitating commercial transactions". If you'd rather not rely on
+that, the same repository runs on **Cloudflare Pages** with no changes. Cloudflare's free terms don't rule out
+commercial sites, and static traffic is free and unlimited. You (the owner) must create the Cloudflare account;
+its terms don't allow someone else to sign up for you.
+
+1. Sign up at https://dash.cloudflare.com (free plan).
+2. **Workers & Pages → Create application → Pages → Connect to Git**, authorize GitHub, choose `hairoespii/NEXUS-Website`.
+3. Production branch: the branch with this site. Build command: `node scripts/build.mjs`. Build output directory: `docs`.
+4. Under **Environment variables**, add `SITE_URL` = the address Cloudflare gives the project, e.g. `https://nexus-research.pages.dev/`.
+5. **Save and Deploy.** Cloudflare serves `404.html` automatically.
+
+Netlify's free plan also works (build command `node scripts/build.mjs`, publish directory `docs`, same
+`SITE_URL` variable), but it has a monthly credit limit that pauses the site when used up.
+
+Whichever host you pick, a custom domain makes the business look most established.
+
 ## Moving to a custom domain later
 
 All links inside the site are relative, so nothing needs rebuilding by hand.
