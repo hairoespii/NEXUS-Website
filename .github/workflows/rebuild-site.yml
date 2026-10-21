@@ -70,13 +70,22 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! source=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.source.branch' 2>/dev/null) || [ -z "$source" ]; then
+          if ! pages=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '"\(.build_type) \(.source.branch) \(.source.path)"' 2>/dev/null) || [ -z "$pages" ]; then
             echo "GitHub Pages isn't switched on for this repository yet (or this workflow can't read its settings), so there is nothing to publish."
             exit 0
+          fi
+          read -r build_type source folder <<< "$pages"
+          if [ "$build_type" = "workflow" ]; then
+            echo "::error::Settings > Pages > Source is 'GitHub Actions'. Choose 'Deploy from a branch', then the branch and the /docs folder."
+            exit 1
           fi
           if [ "$source" != "${GITHUB_REF_NAME}" ]; then
             echo "Pages publishes from '$source', not '${GITHUB_REF_NAME}'. The live site changes once this branch is merged there."
             exit 0
+          fi
+          if [ "$folder" != "/docs" ]; then
+            echo "::error::Pages publishes '$source' from the '$folder' folder. In Settings > Pages choose the /docs folder and click Save."
+            exit 1
           fi
           gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent
           echo "Requested a GitHub Pages build of '$source'."

@@ -42,7 +42,8 @@ function listFiles(dir) {
 const files = new Set(listFiles(DOCS));
 const htmlFiles = [...files].filter((f) => f.endsWith('.html')).sort();
 const html = new Map(htmlFiles.map((f) => [f, fs.readFileSync(path.join(DOCS, f), 'utf8')]));
-const decode = (s) => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+const ENTITIES = { amp: '&', quot: '"', '#39': "'", lt: '<', gt: '>' };
+const decode = (s) => s.replace(/&(amp|quot|#39|lt|gt);/g, (m, k) => ENTITIES[k]);
 const ids = (text) => new Set([...text.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
 const externalLinks = new Map();
 
@@ -100,7 +101,7 @@ for (const [file, text] of html) {
   const where = file.startsWith('products/') && file !== 'products/index.html'
     ? '"seoDescription" in data/products.json ("summary" is used if there is none)'
     : 'the "description:" line at the top of its src/pages file';
-  if (!description || description[1].trim().length < 50) problem(file, `missing a meta description, or it is under 50 characters. Change ${where}.`);
+  if (!description || decode(description[1]).trim().length < 50) problem(file, `missing a meta description, or it is under 50 characters. Change ${where}.`);
   if (description && decode(description[1]).length > 170) problem(file, `meta description is ${decode(description[1]).length} characters; the limit is 170. Shorten ${where}.`);
   const h1s = (text.match(/<h1[\s>]/g) || []).length;
   if (h1s !== 1) problem(file, `should have exactly one <h1> main heading, found ${h1s}`);
@@ -108,8 +109,12 @@ for (const [file, text] of html) {
   const visible = text.replace(/<script[\s\S]*?<\/script>/g, '');
   if (/\{\{|\}\}/.test(visible)) {
     const left = visible.match(/\{\{[^}]*\}\}/);
-    problem(file, `still contains ${left ? left[0] : 'a {{placeholder}}'}. {{name}}, {{email}} and {{x}} don't work in "name", "badge", ` +
-      '"price", "freeOffer", "buyLabel", "ctaTitle" or a section "title" in data/products.json. Type the words out instead.');
+    const found = left ? left[0] : 'a {{placeholder}}';
+    const productFile = file.startsWith('products/') && file !== 'products/index.html';
+    problem(file, productFile
+      ? `still contains ${found}. {{name}}, {{email}} and {{x}} don't work in "name", "badge", "price", "freeOffer", ` +
+        '"buyLabel", "ctaTitle", or a section\'s "title" or "nav" in data/products.json. Type the words out instead.'
+      : `still contains ${found}. Check its spelling in the matching src/pages file.`);
   }
   if (/TODO|FIXME|lorem ipsum/i.test(text)) problem(file, 'contains TODO / FIXME / lorem ipsum text');
 

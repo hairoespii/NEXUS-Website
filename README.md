@@ -52,15 +52,18 @@ You don't have to run these yourself. When you change `data/` or `src/` on githu
    page (only one product can be featured).
 6. Make sure `buyUrl` is the **new product's own** Stripe payment link. The build refuses two products with
    the same link. No payment link yet? Set `"status": "coming-soon"` and leave `buyUrl` out.
-7. If the new product has its own free sample, delivery or refund rules, also update
-   `src/pages/refund-policy.html` and `src/pages/terms.html`. They describe the current product.
+7. Also update `src/pages/refund-policy.html` (its first paragraph names the products it covers). If the new
+   product's free sample, delivery or refund rules differ, update `src/pages/refund-policy.html` and sections 5
+   to 8 of `src/pages/terms.html` too. Keep the product with slug `amazon-bundle-rule-check`: the Home, About,
+   Contact, Terms and Refund pages describe it.
 8. Click **Commit changes**. Then watch the **Actions** tab for the green tick (see above).
 9. Open the new product's page on your phone and read it top to bottom.
 
 **Rules for typing in `products.json`:** keep the double quotes around text, a comma between items, and no
 comma after the last item in a list. Most text can use `**bold**`, `[link text](/refund-policy/)` (a page
 on this site), `[link text](https://...)`, and `{{name}}`, `{{email}}` and `{{x}}`. These do **not** work in
-`slug`, `name`, `badge`, `price`, `freeOffer`, `buyLabel`, `freeSample`, `ctaTitle` or a section's `title`.
+`slug`, `name`, `badge`, `price`, `freeOffer`, `buyLabel`, `ctaTitle`, or a section's `title` or `nav`
+(`freeSample` takes `{{name}}`, `{{email}}` and `{{x}}`, but not bold or links, except in its `note`).
 
 ### What each field does
 
@@ -80,9 +83,9 @@ on this site), `[link text](https://...)`, and `{{name}}`, `{{email}}` and `{{x}
 | `price` | Yes | `amount` (a number, e.g. `29`), `currency` (e.g. `"USD"`; the site adds it after the price), `label` (e.g. `"$29"`), `terms` (e.g. `"one-time"`). |
 | `freeOffer` | | Highlighted line in the price box, like `"Free 5-listing sample first"`. |
 | `buyUrl` | Yes, if available | The product's Stripe payment link. |
-| `buyLabel` | | Buy-button text. Leave it out to get "Buy now: $price". Any price in it must match `price.label`. |
+| `buyLabel` | | Buy-button text. Leave it out to get "Buy now: $price". Any dollar price written in it, or in the summary, intro, seoDescription, chips, highlights, price details or How it works steps, must match `price` (the build checks). |
 | `buyNote` | | Short note under the buy buttons: delivery time and cancellation. |
-| `freeSample` | | The free-sample email button: `label` (button text), `subject` and `body` (the pre-written email). |
+| `freeSample` | | The free-sample email button: `label` (button text), `subject` and `body` (the pre-written email). Optional `note`: small print under the buttons, e.g. the address to write to without an email app. |
 | `sections` | | The page's main blocks. Each has an `id` (lowercase with dashes, unique on the page), a `title`, and `text` (paragraphs) and/or `items` (a ticked list). Optional: `nav` (short name for the jump menu), `note` (small print), `"column": true` (two such blocks in a row sit side by side) and `"style": "limits"` (dashes instead of ticks). |
 | `howItWorks` | | The numbered steps: each has a `title` and `text`. |
 | `delivery` | | Delivery-time table: each row has a `label` and `value`. `deliveryNote` is the small print under it. |

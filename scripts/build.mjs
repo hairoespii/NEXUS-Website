@@ -55,6 +55,9 @@ const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ESCAPES[c]);
 const isText = (value) => typeof value === 'string' && value.trim() !== '';
 const isHttps = (value) => isText(value) && /^https:\/\/[^\s]+$/.test(value);
 const hash = (text) => crypto.createHash('sha256').update(text).digest('hex').slice(0, 10);
+// Every dollar amount written in a piece of text, e.g. "$29", "$29.00" or "$1,299".
+const dollars = (text) => [...String(text || '').matchAll(/\$\s?(\d{1,3}(?:,\d{3})+(?!\d)|\d+)(?:\.(\d{2}))?(?!\d)/g)]
+  .map((m) => ({ shown: m[0], value: Number(`${m[1].replace(/,/g, '')}.${m[2] || '00'}`) }));
 // An email address may wrap before "@" instead of mid-word on narrow screens.
 const emailHtml = (email) => esc(email).replace('@', '<wbr>@');
 
@@ -133,6 +136,9 @@ function loadProducts(site) {
     const need = (ok, message) => { if (!ok) fail(`${where}: ${message}`); };
     const textList = (key) => need(p[key] === undefined || (Array.isArray(p[key]) && p[key].every(isText)),
       `"${key}" must be a list of text items, like ["first", "second"]`);
+    const allow = (obj, keys, at) => {
+      for (const k of Object.keys(obj || {})) need(keys.includes(k), `${at}: unknown field "${k}". Check the spelling. Allowed: ${keys.join(', ')}`);
+    };
     const objectList = (key, fields) => need(p[key] === undefined ||
       (Array.isArray(p[key]) && p[key].every((item) => item && fields.every((f) => isText(item[f])))),
     `"${key}" must be a list of items that each have ${fields.map((f) => `"${f}"`).join(' and ')}`);
@@ -169,29 +175,41 @@ function loadProducts(site) {
     '"freeSample" needs a "label" and a "subject" (and usually a "body")');
     need(p.freeSample === undefined || p.freeSample.body === undefined || typeof p.freeSample.body === 'string',
       '"freeSample.body" must be text');
+    need(p.freeSample === undefined || p.freeSample.note === undefined || isText(p.freeSample.note), '"freeSample.note" must be text');
+    allow(p.freeSample, ['label', 'subject', 'body', 'note'], '"freeSample"');
+    allow(p.price, ['amount', 'currency', 'label', 'terms'], '"price"');
     for (const key of ['badge', 'intro', 'freeOffer', 'deliveryNote', 'buyLabel', 'buyNote', 'ctaTitle', 'ctaText', 'disclaimer', 'seoTitle', 'seoDescription']) {
       need(p[key] === undefined || isText(p[key]), `"${key}" must be text`);
     }
     for (const key of ['highlights', 'priceDetails', 'freeSampleTerms', 'chips']) textList(key);
-    // Text that sits right next to the price must show the same price.
-    for (const text of [p.buyLabel, ...(p.chips || [])]) {
-      for (const m of String(text || '').matchAll(/\$\d+(?:\.\d{2})?/g)) {
-        need(m[0] === p.price.label, `"buyLabel" or "chips" says ${m[0]}, but "price.label" is "${p.price.label}". Make them match.`);
+    objectList('howItWorks', ['title', 'text']);
+    objectList('delivery', ['label', 'value']);
+    objectList('faq', ['q', 'a']);
+    // Any price written in the product's text must be the product's price, so a
+    // copied product can't keep the old price somewhere on its page.
+    for (const d of dollars(p.price.label)) {
+      need(d.value === p.price.amount, `"price.label" is "${p.price.label}" but "price.amount" is ${p.price.amount}. Make them match.`);
+    }
+    const priced = [p.buyLabel, p.summary, p.intro, p.seoDescription, p.freeOffer, p.buyNote, ...(p.chips || []),
+      ...(p.highlights || []), ...(p.priceDetails || []), ...(p.howItWorks || []).map((step) => step.text)];
+    for (const text of priced) {
+      for (const d of dollars(text)) {
+        need(d.value === p.price.amount, `"${text}" says ${d.shown}, but the price is ${p.price.label}. Make them match.`);
       }
     }
     // Search engines show 50 to 170 characters; check.mjs enforces the same range.
     const description = plainText(p.seoDescription || p.summary, site, where);
-    need(description.length >= 50 && description.length <= 170,
-      `${p.seoDescription ? '"seoDescription"' : '"summary"'} is ${description.length} characters, but the search-engine ` +
-      'description must be 50 to 170. Change it, or add a separate "seoDescription" of 50 to 170 characters.');
-    objectList('howItWorks', ['title', 'text']);
-    objectList('delivery', ['label', 'value']);
-    objectList('faq', ['q', 'a']);
+    need(description.length >= 50 && description.length <= 170, p.seoDescription
+      ? `"seoDescription" is ${description.length} characters; it must be 50 to 170. Shorten or lengthen it.`
+      : `"summary" is ${description.length} characters, but search engines need 50 to 170. Change it, or add a separate "seoDescription" of 50 to 170 characters.`);
     need(p.sections === undefined || Array.isArray(p.sections), '"sections" must be a list of { "id", "title", ... } blocks');
     const ids = new Set(['how-it-works', 'delivery', 'price', 'faq', 'free-sample-terms']);
     (p.sections || []).forEach((s, n) => {
       const at = `"sections" item #${n + 1}`;
       need(s && isText(s.title), `${at} needs a "title"`);
+      allow(s, ['id', 'title', 'nav', 'text', 'items', 'note', 'column', 'style'], at);
+      need(s.style === undefined || s.style === 'limits', `${at}: "style" can only be "limits"`);
+      need(s.column === undefined || typeof s.column === 'boolean', `${at}: "column" must be true or false, without quotes`);
       need(isText(s.id) && SLUG.test(s.id), `${at} needs an "id": lowercase letters, numbers and dashes, e.g. "what-you-get"`);
       need(!ids.has(s.id), `${at}: the id "${s.id}" is already used on this page`);
       ids.add(s.id);
@@ -221,7 +239,7 @@ const NAV = [
   { key: 'contact', label: 'Contact', to: 'contact/' },
 ];
 const POLICIES = [
-  { label: 'Refund Policy', to: 'refund-policy/' },
+  { label: 'Refund and Cancellation Policy', to: 'refund-policy/' },
   { label: 'Terms of Service', to: 'terms/' },
   { label: 'Privacy Policy', to: 'privacy/' },
 ];
@@ -263,8 +281,9 @@ function plainText(text, site, where) {
 function rich(text, ctx, site, where) {
   return esc(fillValues(text, site, where))
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (match, label, href) =>
-      `<a href="${href.startsWith('/') ? ctx.link(href.slice(1)) : href}">${label}</a>`);
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (match, label, href) => (href.startsWith('mailto:') && label.includes('@')
+      ? `<a class="email-link" href="${href}">${label.replace('@', '<wbr>@')}</a>`
+      : `<a href="${href.startsWith('/') ? ctx.link(href.slice(1)) : href}">${label}</a>`));
 }
 
 const LOGO = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="8" fill="#0d1830"/><path d="M16 8.5 8.5 22.5h15Z" fill="none" stroke="#4fe3c9" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 8.5v9.2M8.5 22.5l7.5-4.8 7.5 4.8" fill="none" stroke="#4fe3c9" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="8.5" r="2.6" fill="#4fe3c9"/><circle cx="8.5" cy="22.5" r="2.6" fill="#4fe3c9"/><circle cx="23.5" cy="22.5" r="2.6" fill="#4fe3c9"/><circle cx="16" cy="17.7" r="2.2" fill="#e9eef8"/></svg>`;
@@ -355,7 +374,9 @@ function footer(site, ctx) {
 /* ---------- product pieces ---------- */
 
 function sampleHref(site, p) {
-  return p.freeSample ? mailto(site.email, p.freeSample.subject, p.freeSample.body) : '';
+  if (!p.freeSample) return '';
+  const where = `data/products.json ("${p.name}") freeSample`;
+  return mailto(site.email, fillValues(p.freeSample.subject, site, where), p.freeSample.body && fillValues(p.freeSample.body, site, where));
 }
 
 function buyButton(p, className = 'btn btn-primary') {
@@ -382,13 +403,13 @@ function checkoutNote(site, ctx) {
   if (site.statementDescriptor) lines.push(`Shows on your card statement as ${esc(site.statementDescriptor)}.`);
   if (site.country) lines.push(`${esc(site.name)} is based in ${esc(site.country)}.`);
   return `<p class="price-note">${lines.join(' ')}</p>
-  <p class="price-links"><a href="${ctx.link('refund-policy/')}">Refund Policy</a><a href="${ctx.link('terms/')}">Terms of Service</a><a href="${ctx.link('privacy/')}">Privacy Policy</a></p>`;
+  <p class="price-links"><a href="${ctx.link('refund-policy/')}">Refund and Cancellation Policy</a><a href="${ctx.link('terms/')}">Terms of Service</a><a href="${ctx.link('privacy/')}">Privacy Policy</a></p>`;
 }
 
 function pricePanel(site, ctx, p) {
   const comingSoon = p.status !== 'available';
   const buyNote = p.buyNote ? `<p class="price-note price-note-strong">${rich(p.buyNote, ctx, site, `data/products.json ("${p.name}") buyNote`)}</p>\n  ` : '';
-  const sampleNote = p.freeSample && !comingSoon ? `<p class="price-note">No email app? Send up to 5 listing links or ASINs to <a class="email-link" href="mailto:${esc(site.email)}">${emailHtml(site.email)}</a>.${
+  const sampleNote = p.freeSample && p.freeSample.note && !comingSoon ? `<p class="price-note">${rich(p.freeSample.note, ctx, site, `data/products.json ("${p.name}") freeSample.note`)}${
     p.freeSampleTerms ? ` <a href="${ctx.link(`products/${p.slug}/`)}#free-sample-terms">Free sample terms</a>.` : ''}</p>\n  ` : '';
   return `<div class="price-panel">
   <p class="price-panel-label">${comingSoon ? 'Coming soon' : 'Price'}</p>
@@ -412,6 +433,7 @@ function productCard(site, ctx, p, headingLevel = 'h2') {
     ${buyButton(p)}
     <a class="btn btn-secondary" href="${href}" aria-label="Details: ${esc(p.name)}">Details</a>
   </div>
+  ${p.status === 'available' && p.buyNote ? `<p class="price-note">${rich(p.buyNote, ctx, site, `data/products.json ("${p.name}") buyNote`)}</p>` : ''}
 </article>`;
 }
 
@@ -485,7 +507,7 @@ function productPage(site, ctx, p) {
     <ol class="steps">${p.howItWorks.map((s) => `<li><h3>${r(s.title)}</h3><p>${r(s.text)}</p></li>`).join('')}</ol>` }, 'how-it-works'));
   }
 
-  if (p.delivery || p.priceDetails) {
+  if (p.delivery || p.priceDetails || p.freeSampleTerms) {
     if (p.delivery) jump.push({ id: 'delivery', label: 'Delivery time' });
     jump.push({ id: 'price', label: 'Price' });
     html.push(section({ twoCol: true, html: `${p.delivery ? `<div class="col" id="delivery">
@@ -615,11 +637,15 @@ function build() {
   const site = loadSite();
   const products = loadProducts(site);
   const featured = products.find((p) => p.featured === true) || products[0];
-  // The Terms, About and Contact pages talk about this product by name, so they
-  // must point at it even when another product is featured on the home page.
+  // The Home, About, Contact, Terms and Refund pages talk about this product and its
+  // free sample by name, so they must point at it even when another product is featured.
   const bundle = products.find((p) => p.slug === 'amazon-bundle-rule-check') ||
-    fail('data/products.json: the Terms, About and Contact pages describe the product with slug "amazon-bundle-rule-check". ' +
-      'Keep that product, or update those pages first.');
+    fail('data/products.json: the Home, About, Contact, Terms and Refund pages describe the product with slug ' +
+      '"amazon-bundle-rule-check". Keep that product, or update those pages first.');
+  if (bundle.status !== 'available' || !bundle.freeSample || !bundle.freeSampleTerms) {
+    fail(`data/products.json: the Home, About, Contact, Terms and Refund pages describe "${bundle.name}" and its free sample, ` +
+      'so it must stay "available" with "freeSample" and "freeSampleTerms". Update those pages first.');
+  }
   const cssVersion = hash(readText('src/assets/styles.css'));
 
   // GitHub writes docs/CNAME itself when a custom domain is set in Settings > Pages.

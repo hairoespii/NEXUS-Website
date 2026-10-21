@@ -29,18 +29,18 @@ These appear on the product page and in the policies. Change any you don't agree
 | --- | --- |
 | Free sample delivered **within 2 business days** of getting the listings | `data/products.json` → `delivery` |
 | Full check delivered **within 5 business days** of payment + listings | `data/products.json` → `delivery`, `buyNote` |
-| **One free sample per Amazon seller account** | `data/products.json` → `freeSampleTerms`; `src/pages/refund-policy.html`; `src/pages/terms.html` |
+| **One free sample per Amazon seller account** (the sample email asks for the seller name so you can enforce this) | `data/products.json` → `freeSampleTerms`, `freeSample`; `src/pages/refund-policy.html`; `src/pages/terms.html` |
 | One **catalog** = the bundle listings sold under one Amazon seller account (no listing limit) | `data/products.json` → `faq` |
-| We check against Amazon's **US** bundling policy; other stores: email first | `data/products.json` → `faq` |
-| **What we look at / What we don't do** (seller-assembled bundles, Amazon's exceptions, listing basics; no logins, no changes to listings, no contact with brands or Amazon) | `data/products.json` → `sections` |
+| We check against Amazon's **US** bundling policy; other stores: email first, or full refund if we can't check them | `data/products.json` → `faq`, `sections` (`who-its-for`); `src/pages/refund-policy.html` |
+| **What we check / What we don't do** (seller-assembled bundles, Amazon's exceptions, listing basics; no logins, no changes to listings, no contact with brands or Amazon) | `data/products.json` → `sections` |
 | Report is **a written report, by email** | `data/products.json` → `delivery`, `sections` |
-| **Full refund** if cancelled before work starts. Work "starts" when **you reply to confirm you've received the buyer's listings**, so send that short reply every time | `src/pages/refund-policy.html`, `src/pages/terms.html`, `data/products.json` → `buyNote` |
+| **Full refund** if cancelled before work starts. Work "starts" when **you reply to confirm you've received the buyer's listings**, so send that short reply every time | `src/pages/refund-policy.html`, `src/pages/terms.html`, `data/products.json` → `buyNote`, `priceDetails`, `howItWorks` |
 | **Full refund** if the report is late (claim within 14 days of getting a late report), or if we can't do the check (e.g. a non-US store) | `src/pages/refund-policy.html`, `src/pages/terms.html` |
-| If we need more time, we **email before the deadline to agree a new date**; the buyer may take a full refund instead | `data/products.json` → `deliveryNote`; `src/pages/terms.html` |
-| Report problems (missing listings, a wrong fact, not as described) **within 14 days** of delivery → fix or full refund | `src/pages/refund-policy.html`, `src/pages/terms.html` |
+| If we need more time, we **email before the deadline to agree a new date**; the buyer may take a full refund instead | `data/products.json` → `deliveryNote`; `src/pages/terms.html`; `src/pages/refund-policy.html` |
+| Report problems (missing listings, a wrong fact, not as described) **within 14 days** of delivery → fix or full refund | `src/pages/refund-policy.html`, `src/pages/terms.html`, `data/products.json` → `faq` |
 | **No refund for change of mind** once work has started | `src/pages/refund-policy.html` |
 | Buyers must be **18+ and buying for their business** | `src/pages/terms.html` |
-| We **never ask for passwords** and **don't send marketing emails** | `src/pages/about.html`, `src/pages/terms.html`, `src/pages/privacy.html` |
+| We **never ask for passwords** and **don't send marketing emails** | `src/pages/about.html`, `src/pages/terms.html`, `src/pages/privacy.html`, `data/products.json` → `faq`, `sections` (`what-you-get`, `what-we-dont-do`) |
 | Order records kept **as long as tax rules require**; unused free-sample emails deleted **within 12 months** | `src/pages/privacy.html` |
 
 **If any tool other than Stripe, Gmail and GitHub touches customer emails or listings** (for example an AI
@@ -75,17 +75,21 @@ Don't redo the Payment Link. These are settings around it.
    site, and note the **statement descriptor** (put it in `data/site.json`).
 3. Optional but recommended: on the Payment Link, turn on **require customers to accept your terms of service**
    and show your policies at checkout. Card issuers give more weight to terms the buyer ticked.
-4. Reply to Stripe's request with the website link **well before November 18, 2026**.
+4. Optional: on the Payment Link, under **After payment**, show a confirmation message such as "Next step: email the
+   links or ASINs of your bundle listings and the Amazon store you sell in to NEXUSResearchNX@gmail.com, from the
+   email address you used here." Buyers who start from the Products page then know what to do next.
+5. Reply to Stripe's request with the website link **well before November 18, 2026**.
 
-**Currency:** your Payment Link offers buyers outside the US their local currency (Stripe's Adaptive
-Pricing; the checkout showed euros from a European connection). The site explains this. If you'd rather
-charge USD only, turn Adaptive Pricing off in the Stripe Dashboard.
+**Currency:** Stripe's docs say "Adaptive Pricing is always enabled for Payment Links", so buyers outside the US
+see their local currency selected for them (the checkout showed euros from a European connection), at Stripe's
+exchange rate, which includes a 2 to 4% conversion fee the buyer pays. They can switch to USD. The site explains this.
 
 ## 6. Later
 
-- **After January 11, 2027:** the product page talks about checking listings "before January 11, 2027" and
-  "before the deadline". Update that wording in `data/products.json` (`intro`, `ctaTitle`, and the
-  `who-its-for` block in `sections`) and the home page lead in `src/pages/home.html`.
+- **After January 11, 2027:** the site talks about the policy that "takes effect" on January 11, 2027 and about
+  checking listings "before the deadline". Update the wording in `data/products.json` (`summary`, `intro`,
+  `seoDescription`, `ctaTitle`, `sections` → `the-rule` and `who-its-for`, and the first `faq` answer), in
+  `src/pages/home.html` and in `src/pages/about.html`.
 - **Keep "Last checked" honest:** the product page cites Amazon's announcement and policy page, "Last checked
   October 21, 2026". Re-read those pages now and then and update the date in `data/products.json` (`sections` → `the-rule` → `note`).
 - **Custom domain:** see "Moving to a custom domain later" in `README.md`. Buying the domain is the only step that costs money.
