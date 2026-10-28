@@ -289,7 +289,7 @@ function rich(text, ctx, site, where) {
 const LOGO = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="8" fill="#0d1830"/><path d="M16 8.5 8.5 22.5h15Z" fill="none" stroke="#4fe3c9" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 8.5v9.2M8.5 22.5l7.5-4.8 7.5 4.8" fill="none" stroke="#4fe3c9" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="8.5" r="2.6" fill="#4fe3c9"/><circle cx="8.5" cy="22.5" r="2.6" fill="#4fe3c9"/><circle cx="23.5" cy="22.5" r="2.6" fill="#4fe3c9"/><circle cx="16" cy="17.7" r="2.2" fill="#e9eef8"/></svg>`;
 
 function layout(site, ctx, page, body, { cssVersion, structuredData = [] }) {
-  const title = ctx.isHome ? `${site.name}: ${site.tagline}` : `${page.title} | ${site.name}`;
+  const title = ctx.isHome ? `${site.name}. ${site.tagline}` : `${page.title}, ${site.name}`;
   const navLinks = NAV.map((item) => {
     const current = page.nav === item.key ? (page.navExact ? ' aria-current="page"' : ' class="is-section" aria-current="true"') : '';
     return `<li><a href="${ctx.link(item.to)}"${current}>${esc(item.label)}</a></li>`;
@@ -311,12 +311,12 @@ ${ctx.isNotFound ? '<meta name="robots" content="noindex">' : `<link rel="canoni
 <link rel="stylesheet" href="${ctx.root}assets/styles.css?v=${cssVersion}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.name)}">
-<meta property="og:title" content="${esc(ctx.isHome ? site.name : `${page.title} | ${site.name}`)}">
+<meta property="og:title" content="${esc(ctx.isHome ? site.name : `${page.title}, ${site.name}`)}">
 <meta property="og:description" content="${esc(page.description)}">
 ${ctx.isNotFound ? '' : `<meta property="og:url" content="${esc(ctx.canonical)}">\n`}<meta property="og:image" content="${esc(ogImage)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${esc(`${site.name}: ${site.tagline}`)}">
+<meta property="og:image:alt" content="${esc(`${site.name}. ${site.tagline}`)}">
 <meta name="twitter:card" content="summary_large_image">
 ${site.xHandle ? `<meta name="twitter:site" content="${esc(site.xHandle)}">\n` : ''}${structuredData.map(jsonLd).join('\n')}
 </head>
@@ -351,7 +351,7 @@ function footer(site, ctx) {
         <h2>Contact</h2>
         <ul role="list">
           <li><a class="email-link" href="mailto:${esc(site.email)}">${emailHtml(site.email)}</a></li>
-          ${site.x ? `<li><a href="${esc(site.x)}">X: ${esc(site.xHandle || site.x)}</a></li>` : ''}
+          ${site.x ? `<li><a href="${esc(site.x)}">${esc((site.xHandle || 'X').replace(/^@/, ''))} on X</a></li>` : ''}
         </ul>
       </div>
       <div>
@@ -365,7 +365,7 @@ function footer(site, ctx) {
     </div>
     <div class="footer-bottom">
       <p class="disclaimer">${esc(site.disclaimer)}</p>
-      <p>&copy; ${new Date().getFullYear()} ${esc(site.name)}</p>
+      <p>Copyright ${new Date().getFullYear()} ${esc(site.name)}</p>
     </div>
   </div>
 </footer>`;
@@ -381,7 +381,7 @@ function sampleHref(site, p) {
 
 function buyButton(p, className = 'btn btn-primary') {
   if (p.status !== 'available') return '';
-  return `<a class="${className}" href="${esc(p.buyUrl)}">${esc(p.buyLabel || `Buy now: ${p.price.label}`)}</a>`;
+  return `<a class="${className}" href="${esc(p.buyUrl)}">${esc(p.buyLabel || `Buy now, ${p.price.label}`)}</a>`;
 }
 
 function sampleButton(site, p, className = 'btn btn-secondary') {
@@ -389,16 +389,17 @@ function sampleButton(site, p, className = 'btn btn-secondary') {
   return `<a class="${className}" href="${esc(sampleHref(site, p))}">${esc(p.freeSample.label)}</a>`;
 }
 
-// "$29 USD one-time, per catalog". Stripe asks for the currency to be spelled out, not just "$".
+// "$29 USD, paid once, for up to 25 bundle listings". Stripe asks for the currency to be spelled out, not just "$".
 function priceLine(p, className = 'price') {
-  return `<p class="${className}"><span class="price-amount">${esc(p.price.label)}</span> <span class="price-currency">${esc(p.price.currency)}</span>${
+  // The comma stays inside the currency span. .price is a flex row with a gap, so a loose comma would sit apart from "USD".
+  return `<p class="${className}"><span class="price-amount">${esc(p.price.label)}</span> <span class="price-currency">${esc(p.price.currency)}${p.price.terms ? ',' : ''}</span>${
     p.price.terms ? ` <span class="price-terms">${esc(p.price.terms)}</span>` : ''}</p>`;
 }
 
 // The small print next to every buy button: how payment works and where the policies are.
 function checkoutNote(site, ctx) {
   const lines = [
-    'Secure checkout by Stripe, which is certified to PCI Service Provider Level 1. We never see or store your full card number.',
+    'Payment is handled by Stripe. We never see your card number.',
   ];
   if (site.statementDescriptor) lines.push(`Shows on your card statement as ${esc(site.statementDescriptor)}.`);
   if (site.country) lines.push(`${esc(site.name)} is based in ${esc(site.country)}.`);
@@ -428,10 +429,10 @@ function productCard(site, ctx, p, headingLevel = 'h2') {
   ${badge ? `<p class="badge">${esc(badge)}</p>` : ''}
   <${headingLevel} class="product-card-title"><a href="${href}">${esc(p.name)}</a></${headingLevel}>
   <p>${rich(p.summary, ctx, site, `${p.name} summary`)}</p>
-  <p class="product-card-price"><strong>${esc(p.price.label)} ${esc(p.price.currency)}</strong>${p.price.terms ? ` ${esc(p.price.terms)}` : ''}${p.freeOffer ? `<br><span>${esc(p.freeOffer)}</span>` : ''}</p>
+  <p class="product-card-price"><strong>${esc(p.price.label)} ${esc(p.price.currency)}</strong>${p.price.terms ? `, ${esc(p.price.terms)}` : ''}${p.freeOffer ? `<br><span>${esc(p.freeOffer)}</span>` : ''}</p>
   <div class="btn-row">
     ${buyButton(p)}
-    <a class="btn btn-secondary" href="${href}" aria-label="Details: ${esc(p.name)}">Details</a>
+    <a class="btn btn-secondary" href="${href}" aria-label="Details for ${esc(p.name)}">Details</a>
   </div>
   ${p.status === 'available' && p.buyNote ? `<p class="price-note">${rich(p.buyNote, ctx, site, `data/products.json ("${p.name}") buyNote`)}</p>` : ''}
 </article>`;
@@ -443,7 +444,7 @@ function productList(ctx, products) {
   return `<div class="product-list">
   <p class="product-list-label">Products</p>
   <ul role="list">${shown.map((p) => `<li><a href="${ctx.link(`products/${p.slug}/`)}"><span class="product-list-name">${esc(p.name)}</span><span class="product-list-price">${
-    p.status === 'coming-soon' ? 'Coming soon' : `<strong>${esc(p.price.label)} ${esc(p.price.currency)}</strong>${p.price.terms ? ` ${esc(p.price.terms)}` : ''}${p.freeOffer ? ` &middot; ${esc(p.freeOffer)}` : ''}`
+    p.status === 'coming-soon' ? 'Coming soon' : `<strong>${esc(p.price.label)} ${esc(p.price.currency)}</strong>${p.price.terms ? `, ${esc(p.price.terms)}` : ''}${p.freeOffer ? ` ${esc(p.freeOffer)}` : ''}`
   }</span></a></li>`).join('')}</ul>
   ${products.length > shown.length ? `<p class="product-list-more"><a href="${ctx.link('products/')}">See all ${products.length} products</a></p>` : ''}
 </div>`;
@@ -459,7 +460,7 @@ function featuredSection(site, ctx, p) {
       <h2 id="featured-title"><a href="${ctx.link(`products/${p.slug}/`)}">${esc(p.name)}</a></h2>
       <p class="lead">${rich(p.summary, ctx, site, where)}</p>
       ${highlights.length ? `<ul class="checklist" role="list">${highlights.map((h) => `<li>${rich(h, ctx, site, where)}</li>`).join('')}</ul>` : ''}
-      <p><a class="text-link" href="${ctx.link(`products/${p.slug}/`)}">See full details <span aria-hidden="true">&rarr;</span></a></p>
+      <p><a class="text-link" href="${ctx.link(`products/${p.slug}/`)}">See full details</a></p>
     </div>
     ${pricePanel(site, ctx, p)}
   </div>
@@ -526,7 +527,7 @@ function productPage(site, ctx, p) {
   }
 
   if (p.faq) {
-    jump.push({ id: 'faq', label: 'FAQ' });
+    jump.push({ id: 'faq', label: 'Questions' });
     html.push(section({ html: `<h2>Frequently asked questions</h2>
     <div class="faq">${p.faq.map((f) => `<div class="faq-item"><h3>${r(f.q)}</h3><p>${r(f.a)}</p></div>`).join('')}</div>` }, 'faq'));
   }
@@ -678,13 +679,14 @@ function build() {
       emailHref: esc(`mailto:${site.email}`),
       x: esc(site.x || ''),
       xHandle: esc(site.xHandle || ''),
+      xName: esc((site.xHandle || '').replace(/^@/, '')),
       disclaimer: esc(site.disclaimer),
       policyUpdated: esc(formatDate(site.policyUpdated)),
       draftNotice: site.policyStatus
-        ? `<p class="notice"><strong>${esc(site.policyStatus)}</strong><span>Plain-English draft. Last updated ${esc(formatDate(site.policyUpdated))}.</span></p>`
-        : `<p class="updated">Last updated ${esc(formatDate(site.policyUpdated))}</p>`,
+        ? `<p class="notice"><strong>${esc(site.policyStatus)}</strong><span>Last updated ${esc(formatDate(site.policyUpdated))}.</span></p>`
+        : `<p class="updated">Last updated ${esc(formatDate(site.policyUpdated))}.</p>`,
       // Facts only the owner can supply. Each line stays out of the pages until its field in data/site.json is filled in.
-      operator: esc(`${site.name} is a small, independent online-services business${
+      operator: esc(`${site.name} is a small, independent online services business${
         site.ownerName ? `, operated by ${site.ownerName}` : ''}${site.country ? `, based in ${site.country}` : ''}.`),
       governingLaw: site.governingLaw
         ? `<p>These terms are governed by the laws of ${esc(site.governingLaw)}. This doesn't take away any rights the law where you live gives you that can't be changed by agreement.</p>`

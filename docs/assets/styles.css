@@ -235,8 +235,8 @@ strong { font-weight: 650; color: var(--text); }
 .product-hero h1 { max-width: 16ch; }
 .product-hero .lead { margin-bottom: 24px; }
 
-.breadcrumb ol { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 28px; padding: 0; list-style: none; color: var(--text-faint); font-size: 0.92rem; }
-.breadcrumb li + li::before { content: "/"; content: "/" / ""; margin-right: 6px; color: var(--text-faint); }
+.breadcrumb ol { display: flex; flex-wrap: wrap; gap: 0; margin: 0 0 28px; padding: 0; list-style: none; color: var(--text-faint); font-size: 0.92rem; }
+.breadcrumb li + li::before { content: ", "; content: ", " / ""; margin-right: 0; color: var(--text-faint); }
 .breadcrumb a { color: var(--text-muted); text-decoration: none; }
 .breadcrumb a:hover { color: var(--accent); }
 
