@@ -9,8 +9,9 @@ nexusresearchnx.com.**
 | | |
 | --- | --- |
 | Status | Staging build complete and tested. Not published. |
-| Live website | https://nexusresearchnx.com — unchanged. It is published by GitHub Pages from the branch `ccr-7b44bd0d-q5fvks` (`docs/` folder) of this same repository. **Do not touch that branch** unless the owner approves going live. |
+| Live website | https://nexusresearchnx.com — unchanged. Its source is the branch `ccr-7b44bd0d-q5fvks` of this same repository (`docs/` folder; that branch holds the `CNAME` file for the domain), so it is almost certainly the branch GitHub Pages publishes. **Do not touch that branch** unless the owner approves going live. |
 | This build | Branch `claude/laughing-ride-owes3a`. It has no GitHub Actions workflow and no `docs/` folder, so pushing it cannot change the live site. |
+| Staging preview | Private page: https://claude.ai/artifact/PM1EJ2SfWTDk5okyg5HKmh (only the owner can open it unless shared). Built from this branch. |
 | Design source | Google Drive: `NEXUS_Research_Desktop_Preview.png` and `NEXUS_Research_Mobile_Preview.png` (2026-11-03). |
 | Link map | [LINKS.md](LINKS.md): every link, button and CTA with its destination and status. |
 
