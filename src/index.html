@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXUS Research | Clarity before your next move.</title>
+<meta name="description" content="NEXUS Research is independent research and venture development. We find real problems, investigate what matters, and test practical solutions.">
+{{#staging}}<meta name="robots" content="noindex, nofollow">
+{{/staging}}<meta name="theme-color" content="#071b2d">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="image" href="assets/hero-n.webp" type="image/webp">
+<link rel="stylesheet" href="assets/styles.css">
+<script>document.documentElement.classList.remove('no-js');</script>
+<script src="assets/menu.js" defer></script>
+</head>
+<body id="top">
+<a class="skip-link" {{link:skip}}>Skip to content</a>
+
+{{#staging}}<div class="review-bar" role="note">
+  <div class="container review-bar-inner">
+    <p class="review-bar-label">Review preview</p>
+    <p class="review-bar-note">Not live. Purchases are not available here.</p>
+  </div>
+</div>
+{{/staging}}
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" {{link:home}} aria-label="NEXUS Research, top of page">
+      {{logo}}
+      <span class="brand-name"><strong>NEXUS</strong> Research</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+      <span class="visually-hidden">Menu</span>
+      <svg class="nav-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path class="bar bar-1" d="M4 7h16"/><path class="bar bar-2" d="M4 12h16"/><path class="bar bar-3" d="M4 17h16"/>
+      </svg>
+    </button>
+    <nav class="site-nav" id="site-nav" aria-label="Main">
+      <ul class="nav-list">
+        <li><a {{link:approach}}>Our Approach</a></li>
+        <li><a {{link:tests}}>What We Test</a></li>
+        <li><a {{link:about}}>About</a></li>
+      </ul>
+      <a class="btn btn-gold btn-sm nav-cta" {{link:header-cta}}>Explore Our Work <span class="btn-icon" aria-hidden="true">&#8599;</span></a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow eyebrow-light">Independent research. Practical solutions.</p>
+        <h1 id="hero-title">Clarity before<br> your next&nbsp;move.</h1>
+        <p class="hero-lead">We find real problems, investigate what matters, and test practical solutions.</p>
+        <div class="hero-actions">
+          <a class="btn btn-gold btn-lg" {{link:tests}}>Explore Our Work <span class="btn-icon" aria-hidden="true">&#8594;</span></a>
+          <a class="text-link text-link-light" {{link:approach}}>Our Approach <span class="text-link-icon" aria-hidden="true">&#8595;</span></a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <picture>
+          <source srcset="assets/hero-n.webp" type="image/webp">
+          <img src="assets/hero-n.jpg" width="572" height="548" alt="A geometric N made of glass and brushed steel, crossed by a rising line of gold light." fetchpriority="high" decoding="async">
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-approach" id="approach" aria-labelledby="approach-title">
+    <div class="container">
+      <p class="eyebrow">Our Approach</p>
+      <h2 id="approach-title" class="section-title">Less guesswork.<br>A clearer way forward.</h2>
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num" aria-hidden="true">01</span>
+          <div>
+            <h3 class="step-title"><span class="visually-hidden">Step 1: </span>Understand the problem</h3>
+            <p>Start with a specific problem worth solving.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num" aria-hidden="true">02</span>
+          <div>
+            <h3 class="step-title"><span class="visually-hidden">Step 2: </span>Check the evidence</h3>
+            <p>Research buyers, alternatives, constraints and real-world evidence.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num" aria-hidden="true">03</span>
+          <div>
+            <h3 class="step-title"><span class="visually-hidden">Step 3: </span>Test what works</h3>
+            <p>Turn the strongest findings into practical tests and learn from what happens.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-work" aria-label="Current tests and what NEXUS is building">
+    <div class="container">
+      <div class="work-grid">
+        <div class="work-tests" id="tests">
+          <p class="eyebrow">What We Test</p>
+          <h2 class="section-title">Current tests.</h2>
+          {{current_tests}}
+        </div>
+        <div class="work-about" id="about">
+          <p class="eyebrow">What NEXUS is building</p>
+          <h2 class="section-title">Research that<br>leads somewhere.</h2>
+          <p class="body-copy">NEXUS Research investigates real problems, tests practical responses, and develops promising opportunities through evidence rather than guesswork.</p>
+          <blockquote class="goal">
+            <p>The goal is not simply to publish research.<br><strong>The goal is to discover what deserves to be built.</strong></p>
+          </blockquote>
+          <p class="body-copy">Promising opportunities can graduate into independent businesses. NEXUS Research continues discovering and testing what comes next.</p>
+        </div>
+      </div>
+
+      <div class="model" aria-labelledby="model-title">
+        <h2 class="eyebrow model-title" id="model-title">The NEXUS Model</h2>
+        <ol class="model-steps">
+          <li>Discover</li>
+          <li>Research</li>
+          <li>Test</li>
+          <li>Learn</li>
+          <li>Improve</li>
+          <li>Build</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-principles" aria-labelledby="principles-title">
+    <div class="container">
+      <div class="principles-head">
+        <p class="eyebrow">Our Method</p>
+        <h2 class="principles-title" id="principles-title">The principles behind the work.</h2>
+      </div>
+      <ul class="principles">
+        <li class="principle">
+          <svg class="principle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg>
+          <span>Evidence before claims</span>
+        </li>
+        <li class="principle">
+          <svg class="principle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h6M10 3v6.5L4.6 18.4A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.4-2.6L14 9.5V3"/><path d="M7.2 15h9.6"/></svg>
+          <span>Tests before assumptions</span>
+        </li>
+        <li class="principle">
+          <svg class="principle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 3 9 4.5-9 4.5-9-4.5z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/></svg>
+          <span>Clear limitations</span>
+        </li>
+        <li class="principle">
+          <svg class="principle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="m8 12.5 3 3 5.5-6.5"/></svg>
+          <span>Practical solutions</span>
+        </li>
+        <li class="principle">
+          <svg class="principle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20.5V16h-4.5"/></svg>
+          <span>Continuous learning</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" {{link:home}} aria-label="NEXUS Research, top of page">
+          {{logo}}
+          <span class="brand-name"><strong>NEXUS</strong> Research</span>
+        </a>
+        <p class="footer-blurb">Independent research<br>and venture development.</p>
+        <a class="footer-link footer-link-gold" {{link:site}}>NEXUSResearchNX.com<span class="ext" aria-hidden="true">&#8599;</span></a>
+      </div>
+      <nav class="footer-col" aria-labelledby="footer-explore">
+        <h2 class="footer-heading" id="footer-explore">Explore</h2>
+        <ul>
+          <li><a class="footer-link" {{link:approach}}>Our Approach</a></li>
+          <li><a class="footer-link" {{link:tests}}>What We Test</a></li>
+          <li><a class="footer-link" {{link:about}}>About</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-labelledby="footer-info">
+        <h2 class="footer-heading" id="footer-info">Information</h2>
+        <ul>
+          <li><a class="footer-link" {{link:privacy}}>Privacy<span class="ext" aria-hidden="true">&#8599;</span></a></li>
+          <li><a class="footer-link" {{link:terms}}>Terms<span class="ext" aria-hidden="true">&#8599;</span></a></li>
+          <li><a class="footer-link" {{link:contact}}>Contact<span class="ext" aria-hidden="true">&#8599;</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 NEXUS Research</p>
+      <a class="footer-link" {{link:email}}>NEXUSResearchNX@gmail.com</a>
+    </div>
+{{#staging}}    <p class="footer-note">Review preview. No purchases or submissions. External links open the existing website.</p>
+{{/staging}}  </div>
+</footer>
+</body>
+</html>

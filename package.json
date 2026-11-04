@@ -1,0 +1,17 @@
+{
+  "name": "nexus-research-website",
+  "version": "2.0.0-staging",
+  "private": true,
+  "description": "NEXUS Research homepage (approved 2026-11-03 design). Static HTML/CSS built from content/ and src/ into dist/.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:production": "node scripts/build.mjs --production",
+    "check": "node scripts/check.mjs",
+    "qa": "node scripts/qa.mjs qa-screenshots",
+    "test": "node scripts/build.mjs && node scripts/check.mjs",
+    "preview": "node scripts/serve.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

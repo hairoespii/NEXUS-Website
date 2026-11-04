@@ -1,0 +1,21 @@
+{
+  "_readme": "Current Tests shown on the homepage. Add, remove or replace entries here; the homepage layout does not change. See README.md > 'Changing the Current Tests'. Do not add customers, results, testimonials or guarantees that NEXUS does not have evidence for.",
+  "tests": [
+    {
+      "id": "amazon-bundle-rule-check",
+      "label": "Current test",
+      "title": "Amazon Bundle Rule Check",
+      "summary": "A focused review related to Amazon's published physical-bundle requirements.",
+      "icon": "box",
+      "price": {
+        "amount": "$29",
+        "note": "Test offer"
+      },
+      "cta": {
+        "label": "View the Test",
+        "link": "test-amazon-bundle-rule-check"
+      },
+      "disclaimer": "Independent research. Not affiliated with Amazon. Not legal advice."
+    }
+  ]
+}
