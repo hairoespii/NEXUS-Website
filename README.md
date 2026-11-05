@@ -1,14 +1,17 @@
-# NEXUS Research website — new homepage (staging)
+# NEXUS Research website — new homepage (staging source)
 
 The approved NEXUS Research homepage design (desktop and mobile previews, 2026-11-03), built as a
-working static website. **This is a staging/preview build. It is not live and does not replace
-nexusresearchnx.com.**
+working static website.
+
+**LIVE since 2026-11-05 (owner approved).** The live copy is the `homepage/` folder on branch
+`ccr-7b44bd0d-q5fvks`, the branch GitHub Pages publishes nexusresearchnx.com from. Make future homepage
+changes there (see `homepage/README.md` on that branch); this branch is the staging history.
 
 ## Where things stand
 
 | | |
 | --- | --- |
-| Status | Staging build complete and tested. Not published. |
+| Status | Live on nexusresearchnx.com since 2026-11-05 (commit 4a02120 on `ccr-7b44bd0d-q5fvks`). |
 | Live website | https://nexusresearchnx.com — unchanged. Its source is the branch `ccr-7b44bd0d-q5fvks` of this same repository (`docs/` folder; that branch holds the `CNAME` file for the domain), so it is almost certainly the branch GitHub Pages publishes. **Do not touch that branch** unless the owner approves going live. |
 | This build | Branch `claude/laughing-ride-owes3a`. It has no GitHub Actions workflow and no `docs/` folder, so pushing it cannot change the live site. |
 | Staging preview | Private page: https://claude.ai/artifact/PM1EJ2SfWTDk5okyg5HKmh (only the owner can open it unless shared). Built from this branch. |
