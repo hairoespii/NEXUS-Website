@@ -196,15 +196,15 @@ a { color: inherit; }
 .nav-cta { margin-top: 20px; width: 100%; min-height: 52px; font-size: 16px; }
 
 /* Without JavaScript the menu stays open so every link is reachable. */
-.no-js .nav-toggle { display: none; }
-.no-js .site-nav { display: block; position: static; box-shadow: none; padding-inline: 0; border: 0; }
+html:not(.js) .nav-toggle { display: none; }
+html:not(.js) .site-nav { display: block; position: static; box-shadow: none; padding-inline: 0; border: 0; }
 
 @media (min-width: 900px) {
   .header-inner { min-height: 84px; }
   .brand { font-size: 20px; }
   .logo { width: 44px; height: 44px; }
   .nav-toggle { display: none; }
-  .site-nav, .no-js .site-nav {
+  .site-nav, html:not(.js) .site-nav {
     display: flex; align-items: center; gap: 24px;
     position: static; padding: 0; background: none; border: 0; box-shadow: none;
   }

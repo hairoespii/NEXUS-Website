@@ -1,17 +1,24 @@
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NEXUS Research | Clarity before your next move.</title>
 <meta name="description" content="NEXUS Research is independent research and venture development. We find real problems, investigate what matters, and test practical solutions.">
 {{#staging}}<meta name="robots" content="noindex, nofollow">
-{{/staging}}<meta name="theme-color" content="#071b2d">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="preload" as="image" href="assets/hero-n.webp" type="image/webp">
-<link rel="stylesheet" href="assets/styles.css">
-<script>document.documentElement.classList.remove('no-js');</script>
-<script src="assets/menu.js" defer></script>
+{{/staging}}{{#production}}<link rel="canonical" href="{{canonical}}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NEXUS Research">
+<meta property="og:title" content="NEXUS Research | Clarity before your next move.">
+<meta property="og:description" content="Independent research and venture development. We find real problems, investigate what matters, and test practical solutions.">
+<meta property="og:url" content="{{canonical}}">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"NEXUS Research","url":"{{canonical}}","email":"NEXUSResearchNX@gmail.com","description":"Independent research and venture development."}</script>
+{{/production}}<meta name="theme-color" content="#071b2d">
+<link rel="icon" href="assets/home/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="image" href="assets/home/hero-n.webp" type="image/webp">
+<link rel="stylesheet" href="assets/home/styles.css">
+<script>document.documentElement.classList.add('js');</script>
+<script src="assets/home/menu.js" defer></script>
 </head>
 <body id="top">
 <a class="skip-link" {{link:skip}}>Skip to content</a>
@@ -60,8 +67,8 @@
       </div>
       <div class="hero-art">
         <picture>
-          <source srcset="assets/hero-n.webp" type="image/webp">
-          <img src="assets/hero-n.jpg" width="572" height="548" alt="A geometric N made of glass and brushed steel, crossed by a rising line of gold light." fetchpriority="high" decoding="async">
+          <source srcset="assets/home/hero-n.webp" type="image/webp">
+          <img src="assets/home/hero-n.jpg" width="572" height="548" alt="A geometric N made of glass and brushed steel, crossed by a rising line of gold light." fetchpriority="high" decoding="async">
         </picture>
       </div>
     </div>

@@ -1,5 +1,5 @@
 {
-  "_readme": "Every link and button on the site points to one of these entries (or to a section on the page). status: 'in-page' = jumps to a section of this page; 'existing-site' = a page that exists on the current live website (confirmed from the saved copy of nexusresearchnx.com, 2026-11-02); 'needs-confirmation' = works, but the owner has not confirmed it is the right destination. The build refuses links that are not listed here. LINKS.md is generated from this file.",
+  "_readme": "Every link and button on the site points to one of these entries (or to a section on the page). status: 'in-page' = jumps to a section of this page; 'existing-site' = a page that exists on the current live website (confirmed from the saved copy of nexusresearchnx.com, 2026-11-02); 'needs-confirmation' = works, but the owner has not confirmed it is the right destination. The build refuses links that are not listed here. 'production' (optional) is the link used on the live site, where the website's own pages are linked directly; 'href' is used in the review preview. LINKS.md is generated from this file.",
   "links": {
     "home": {
       "href": "#top",
@@ -42,28 +42,32 @@
       "status": "existing-site",
       "external": true,
       "used_by": "Footer 'NEXUSResearchNX.com'",
-      "note": "Current live website homepage."
+      "note": "Current live website homepage.",
+      "production": "https://nexusresearchnx.com/"
     },
     "privacy": {
       "href": "https://nexusresearchnx.com/privacy/",
       "status": "existing-site",
       "external": true,
       "used_by": "Footer 'Privacy'",
-      "note": "Existing Privacy Policy page (marked DRAFT, owner review on the live site)."
+      "note": "Existing Privacy Policy page (marked DRAFT, owner review on the live site).",
+      "production": "privacy/"
     },
     "terms": {
       "href": "https://nexusresearchnx.com/terms/",
       "status": "existing-site",
       "external": true,
       "used_by": "Footer 'Terms'",
-      "note": "Existing Terms of Service page (marked DRAFT, owner review on the live site)."
+      "note": "Existing Terms of Service page (marked DRAFT, owner review on the live site).",
+      "production": "terms/"
     },
     "contact": {
       "href": "https://nexusresearchnx.com/contact/",
       "status": "existing-site",
       "external": true,
       "used_by": "Footer 'Contact'",
-      "note": "Existing Contact page."
+      "note": "Existing Contact page.",
+      "production": "contact/"
     },
     "email": {
       "href": "mailto:NEXUSResearchNX@gmail.com",
@@ -76,7 +80,8 @@
       "status": "existing-site",
       "external": true,
       "used_by": "Current Test card 'View the Test' (Amazon Bundle Rule Check)",
-      "note": "Existing Amazon Bundle Rule Check page on the live site. That page has the live Stripe checkout; this preview itself takes no payments."
+      "note": "Existing Amazon Bundle Rule Check page. That page has the Stripe checkout and the refund policy; the homepage itself takes no payments.",
+      "production": "products/amazon-bundle-rule-check/"
     }
   }
 }

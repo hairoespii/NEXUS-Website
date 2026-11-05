@@ -19,7 +19,7 @@ const text = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, 
 
 // 1. Links: every href is a known destination; in-page anchors exist.
 const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
-const known = new Set(Object.values(links).map((l) => l.href));
+const known = new Set(Object.values(links).flatMap((l) => [l.href, l.production].filter(Boolean)));
 const anchors = [...html.matchAll(/<a\s([^>]*)>([\s\S]*?)<\/a>/g)];
 for (const [, attrs, inner] of anchors) {
   const href = (attrs.match(/href="([^"]*)"/) || [])[1];
@@ -31,7 +31,8 @@ for (const [, attrs, inner] of anchors) {
   if (!label) errors.push(`A link to ${href} has no text.`);
 }
 const local = [...html.matchAll(/(?:src|href|srcset)="((?!https?:|mailto:|#)[^"]+)"/g)].map((m) => m[1]);
-for (const f of local) if (!existsSync(join(dist, f))) errors.push(`The page uses ${f}, but that file is missing from dist/.`);
+// Links ending in "/" are other pages of the website; the full-site check covers them.
+for (const f of local) if (!f.endsWith('/') && !existsSync(join(dist, f))) errors.push(`The page uses ${f}, but that file is missing from dist/.`);
 
 // 2. Images: alt text and fixed size (prevents layout jumps while loading).
 for (const [img] of html.matchAll(/<img\s[^>]*>/g)) {
