@@ -18,6 +18,7 @@ on:
       - "data/**"
       - "src/**"
       - "scripts/**"
+      - "homepage/**"
       - ".github/workflows/rebuild-site.yml"
   workflow_dispatch:
 

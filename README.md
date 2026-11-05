@@ -9,6 +9,10 @@ The official website of NEXUS Research: what we do, our products, and our polici
 
 ## How the site is put together
 
+**Homepage:** built from [`homepage/`](homepage/README.md) (the approved NEXUS Research design, live since
+2026-11-05). Current Tests cards are in `homepage/content/current-tests.json`. Everything below describes
+the other pages.
+
 | Folder / file | What it is | Edit it? |
 | --- | --- | --- |
 | `data/products.json` | **Every product.** The Products page, the product list and feature on the home page, and each product's own page are built from this one file. | Yes |

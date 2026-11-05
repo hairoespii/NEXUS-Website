@@ -1,0 +1,87 @@
+{
+  "_readme": "Every link and button on the site points to one of these entries (or to a section on the page). status: 'in-page' = jumps to a section of this page; 'existing-site' = a page that exists on the current live website (confirmed from the saved copy of nexusresearchnx.com, 2026-11-02); 'needs-confirmation' = works, but the owner has not confirmed it is the right destination. The build refuses links that are not listed here. 'production' (optional) is the link used on the live site, where the website's own pages are linked directly; 'href' is used in the review preview. LINKS.md is generated from this file.",
+  "links": {
+    "home": {
+      "href": "#top",
+      "status": "in-page",
+      "used_by": "Header logo, footer logo",
+      "note": "Back to the top of the homepage."
+    },
+    "skip": {
+      "href": "#main",
+      "status": "in-page",
+      "used_by": "'Skip to content' keyboard link (hidden until focused)",
+      "note": "Accessibility link for keyboard and screen-reader users."
+    },
+    "approach": {
+      "href": "#approach",
+      "status": "in-page",
+      "used_by": "Nav 'Our Approach', hero 'Our Approach', footer 'Our Approach'",
+      "note": "Our Approach section (three steps)."
+    },
+    "tests": {
+      "href": "#tests",
+      "status": "in-page",
+      "used_by": "Nav 'What We Test', hero 'Explore Our Work', footer 'What We Test'",
+      "note": "Current Tests section."
+    },
+    "header-cta": {
+      "href": "#tests",
+      "status": "needs-confirmation",
+      "used_by": "Header button 'Explore Our Work' (desktop header and mobile menu)",
+      "note": "Goes to Current Tests, the same as the hero button with the same label. The approved preview shows an external-link arrow on this button; if it should open another page instead, name that page."
+    },
+    "about": {
+      "href": "#about",
+      "status": "needs-confirmation",
+      "used_by": "Nav 'About', footer 'About'",
+      "note": "Goes to 'Research that leads somewhere' (What NEXUS is building), the section that describes NEXUS. The current live site also has an About page (https://nexusresearchnx.com/about/); its wording describes the older site, so it was not used."
+    },
+    "site": {
+      "href": "https://nexusresearchnx.com/",
+      "status": "existing-site",
+      "external": true,
+      "used_by": "Footer 'NEXUSResearchNX.com'",
+      "note": "Current live website homepage.",
+      "production": "https://nexusresearchnx.com/"
+    },
+    "privacy": {
+      "href": "https://nexusresearchnx.com/privacy/",
+      "status": "existing-site",
+      "external": true,
+      "used_by": "Footer 'Privacy'",
+      "note": "Existing Privacy Policy page (marked DRAFT, owner review on the live site).",
+      "production": "privacy/"
+    },
+    "terms": {
+      "href": "https://nexusresearchnx.com/terms/",
+      "status": "existing-site",
+      "external": true,
+      "used_by": "Footer 'Terms'",
+      "note": "Existing Terms of Service page (marked DRAFT, owner review on the live site).",
+      "production": "terms/"
+    },
+    "contact": {
+      "href": "https://nexusresearchnx.com/contact/",
+      "status": "existing-site",
+      "external": true,
+      "used_by": "Footer 'Contact'",
+      "note": "Existing Contact page.",
+      "production": "contact/"
+    },
+    "email": {
+      "href": "mailto:NEXUSResearchNX@gmail.com",
+      "status": "existing-site",
+      "used_by": "Footer email address",
+      "note": "Public NEXUS Research email already used on the live site."
+    },
+    "test-amazon-bundle-rule-check": {
+      "href": "https://nexusresearchnx.com/products/amazon-bundle-rule-check/",
+      "status": "existing-site",
+      "external": true,
+      "used_by": "Current Test card 'View the Test' (Amazon Bundle Rule Check)",
+      "note": "Existing Amazon Bundle Rule Check page. That page has the Stripe checkout and the refund policy; the homepage itself takes no payments.",
+      "production": "products/amazon-bundle-rule-check/"
+    }
+  }
+}

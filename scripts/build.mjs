@@ -5,7 +5,9 @@
  *   data/site.json       business details used on every page
  *   data/products.json   every product. The Products grid, the home page feature
  *                        and each product's own page are all built from this file.
- *   src/pages/*.html     page text: home, products, about, contact, policies, 404
+ *   src/pages/*.html     page text: products, about, contact, policies, 404
+ *   homepage/            the homepage (approved NEXUS Research design). Its own
+ *                        content/current-tests.json holds the Current Tests cards.
  *   src/assets/          stylesheet, icons and images, copied as they are
  *
  * Run it with:  node scripts/build.mjs   (Node.js 18 or newer, nothing to install)
@@ -15,6 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { buildHomepage } from '../homepage/scripts/build.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'docs');
@@ -732,7 +735,16 @@ function build() {
     sitemap.push(ctx.canonical);
   }
 
-  if (!seenPaths.has('')) fail('src/pages needs a home page with "path: /".');
+  // The homepage is the approved NEXUS Research design, built from homepage/ (see homepage/README.md).
+  claim('', 'homepage/');
+  try {
+    for (const [rel, content] of buildHomepage({ production: true, siteUrl: site.siteUrl })) writeOut(rel, content);
+  } catch (error) {
+    fail(error.message);
+  }
+  sitemap.unshift(site.siteUrl);
+
+  if (!seenPaths.has('')) fail('The site needs a home page.');
   if (!seenPaths.has('products/')) fail('src/pages needs a products page with "path: /products/".');
 
   copyDir('src/assets', 'assets');

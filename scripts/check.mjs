@@ -123,8 +123,11 @@ for (const [file, text] of html) {
   if (!text.includes('<footer')) { problem(file, 'missing the footer'); continue; }
   if (!footer.includes(site.name)) problem(file, 'footer is missing the business name');
   if (!footer.includes(`href="mailto:${site.email}"`)) problem(file, 'footer is missing the email link');
-  if (!footer.includes(site.disclaimer)) problem(file, 'footer is missing the disclaimer');
-  for (const policy of ['refund-policy/', 'terms/', 'privacy/']) {
+  // The homepage (approved design, homepage/) sells nothing and has a shorter footer: Privacy, Terms and
+  // Contact. Its Current Test card carries the disclaimer; the product page carries the refund policy.
+  const isHome = file === 'index.html';
+  if (!isHome && !footer.includes(site.disclaimer)) problem(file, 'footer is missing the disclaimer');
+  for (const policy of isHome ? ['terms/', 'privacy/', 'contact/'] : ['refund-policy/', 'terms/', 'privacy/']) {
     const linked = [...footer.matchAll(/href="([^"]*)"/g)].some((m) => {
       const t = targetOf(file, decode(m[1]));
       return t.rel === `${policy}index.html`;
@@ -152,7 +155,7 @@ for (const p of products) {
     const buy = `href="${p.buyUrl.replace(/&/g, '&amp;')}"`;
     if (!html.get(file).includes(buy)) problem(file, 'is missing its buy link');
     if (!productsPage.includes(buy)) problem('products/index.html', `is missing the buy link for ${p.name}`);
-    if (p.featured && !(html.get('index.html') || '').includes(buy)) problem('index.html', `is missing the buy link for the featured product ${p.name}`);
+    if (p.featured && !linksTo('index.html', file)) problem('index.html', `has no link to the featured product ${p.name}`);
   }
 }
 
